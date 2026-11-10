@@ -260,6 +260,7 @@ class OpenCodeLocalEngine:
             state.ledger,
             state.transcript,
             self.nudges,
+            self.schemas,
         )
         try:
             text = self._generate(prompt)
@@ -325,8 +326,9 @@ def parse_local_action(text: str) -> ToolCall | None:
     reason = payload.get("reason", "")
     if not isinstance(reason, str):
         reason = ""
-    if not reason and isinstance(arguments.get("reason"), str):
-        reason = arguments.pop("reason")
+    nested_reason = arguments.pop("reason", "") if isinstance(arguments.get("reason"), str) else ""
+    if not reason:
+        reason = nested_reason
     return ToolCall(name=tool, arguments=arguments, reason=reason)
 
 

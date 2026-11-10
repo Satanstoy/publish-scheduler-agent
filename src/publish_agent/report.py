@@ -273,6 +273,20 @@ def build_report(
 
     proposed.sort(key=lambda entry: (entry["slot"]["date"], entry["slot"]["start"]))
     summary = {"total": len(items), **counts}
+    if run_meta["status"] == "failed":
+        outcome = "failed"
+    elif run_meta["status"] == "incomplete":
+        outcome = "incomplete"
+    elif any(
+        item["schedule_status"] in {"save_failed", "blocked_conflict"}
+        or item["review_status"] in {"blocked", "needs_input"}
+        for item in items
+    ):
+        outcome = "needs_attention"
+    elif any(item["confirmation_status"] == "pending_user_confirmation" for item in items):
+        outcome = "needs_confirmation"
+    else:
+        outcome = "scheduled"
     return {
         "schema_version": "1.0",
         "run_id": run_meta["run_id"],
@@ -281,6 +295,7 @@ def build_report(
         "model": run_meta["model"],
         "mode_note": run_meta["mode_note"],
         "status": run_meta["status"],
+        "outcome": outcome,
         "stop_reason": run_meta["stop_reason"],
         "published": False,
         "limits": run_meta["limits"],

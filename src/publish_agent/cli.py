@@ -126,7 +126,10 @@ def _run(args) -> int:
     if args.json:
         print(json.dumps(output, ensure_ascii=False, indent=2))
     else:
-        print(f"status={output['status']} stop_reason={output['stop_reason']} published=false")
+        print(
+            f"status={output['status']} outcome={output['outcome']} "
+            f"stop_reason={output['stop_reason']} published=false"
+        )
         for item in output["items"]:
             draft = item["draft"]
             draft_text = draft["id"] or "-"
@@ -137,17 +140,27 @@ def _run(args) -> int:
             )
         print(f"output={output_path}")
         print(f"trace={trace_path}")
-    item_failure = any(
-        item["schedule_status"] in {"save_failed", "incomplete"}
-        or item["review_status"] in {"blocked", "needs_input"}
-        for item in output["items"]
-    )
-    return 0 if output["status"] == "completed" and not item_failure else 1
+    return 0 if output["outcome"] in {"scheduled", "needs_confirmation"} else 1
 
 
 def _confirm(args) -> int:
     store = JsonStore(args.data_dir, args.state_dir)
-    draft = store.confirm_draft(args.draft_id, now=parse_now(args.now))
+    try:
+        draft = store.confirm_draft(args.draft_id, now=parse_now(args.now))
+    except DraftConflictError as exc:
+        print(
+            json.dumps(
+                {
+                    "ok": False,
+                    "code": "CONFIRM_CONFLICT",
+                    "message": str(exc),
+                    "published": False,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 1
     print(json.dumps(draft, ensure_ascii=False, indent=2))
     return 0
 

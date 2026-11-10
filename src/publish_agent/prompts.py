@@ -55,7 +55,13 @@ def build_user_prompt(request) -> str:
     )
 
 
-def build_local_prompt(request, ledger, transcript, nudges: list[str]) -> str:
+def build_local_prompt(
+    request,
+    ledger,
+    transcript,
+    nudges: list[str],
+    schemas: list[dict[str, Any]] = TOOL_SCHEMAS,
+) -> str:
     status_lines: list[str] = []
     for item in request.items:
         terminal = ledger.terminal_status(item.material_id, item)
@@ -74,7 +80,7 @@ def build_local_prompt(request, ledger, transcript, nudges: list[str]) -> str:
 
     parts = [
         LOCAL_SYSTEM_PROMPT,
-        "## 可用工具\n" + render_tool_list(),
+        "## 可用工具\n" + render_tool_list(schemas),
         "## 请求\n" + json.dumps(request.to_dict(), ensure_ascii=False, indent=2),
         "## 当前状态\n" + "\n".join(status_lines),
     ]

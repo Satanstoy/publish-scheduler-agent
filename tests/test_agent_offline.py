@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from conftest import new_store, run_offline, single_request
+from conftest import item, make_request, new_store, run_offline, single_request
 
 
 def _tool_sequence(trace: dict) -> list[str]:
@@ -13,6 +13,7 @@ def test_normal_schedule(tmp_path):
     output, trace = run_offline(request, store)
     item = output["items"][0]
     assert output["status"] == "completed"
+    assert output["outcome"] == "scheduled"
     assert output["published"] is False
     assert item["review_status"] == "passed"
     assert item["schedule_status"] == "drafted"
@@ -37,6 +38,7 @@ def test_missing_material_info(tmp_path):
     request = single_request("M02", time="14:00")
     output, trace = run_offline(request, store)
     item = output["items"][0]
+    assert output["outcome"] == "needs_attention"
     assert item["review_status"] == "needs_input"
     assert item["schedule_status"] == "not_scheduled"
     assert item["draft"]["save_status"] == "not_attempted"
@@ -52,6 +54,7 @@ def test_rule_risk_blocks(tmp_path):
     request = single_request("M03", time="15:00")
     output, trace = run_offline(request, store)
     item = output["items"][0]
+    assert output["outcome"] == "needs_attention"
     assert item["review_status"] == "blocked"
     assert item["schedule_status"] == "not_scheduled"
     assert any(risk["code"] == "FORBIDDEN_TERM" for risk in item["risks"])
@@ -66,6 +69,7 @@ def test_soft_conflict_saves_pending_alternative(tmp_path):
     request = single_request("M01", time="18:00")
     output, trace = run_offline(request, store)
     item = output["items"][0]
+    assert output["outcome"] == "needs_confirmation"
     assert item["review_status"] == "passed"
     assert item["schedule_status"] == "pending_confirmation"
     assert item["suggested_slot"]["start"] == "19:00"
@@ -84,6 +88,7 @@ def test_hard_conflict_does_not_save_draft(tmp_path):
     request = single_request("M04", date="2026-11-14", time="18:00", constraint="hard")
     output, trace = run_offline(request, store)
     item = output["items"][0]
+    assert output["outcome"] == "needs_attention"
     assert item["schedule_status"] == "blocked_conflict"
     assert item["suggested_slot"]["start"] == "19:00"
     assert item["requested_slot"]["start"] == "18:00"
@@ -110,11 +115,23 @@ def test_duplicate_submission_creates_one_draft(tmp_path):
     assert "save_draft" in _tool_sequence(trace)
 
 
+def test_duplicate_ignores_request_id(tmp_path):
+    store = new_store(tmp_path)
+    first_request = single_request("M01", time="18:00")
+    second_request = make_request([item("M01", time="18:00")], request_id="REQ-DIFFERENT")
+    first, _ = run_offline(first_request, store)
+    second, _ = run_offline(second_request, store)
+    assert second["items"][0]["draft"]["id"] == first["items"][0]["draft"]["id"]
+    assert second["items"][0]["draft"]["save_status"] == "existing"
+    assert store.count_drafts() == 1
+
+
 def test_save_failure_is_reported_without_draft(tmp_path):
     store = new_store(tmp_path, faults={"save_draft"})
     request = single_request("M05", time="21:00")
     output, trace = run_offline(request, store)
     item = output["items"][0]
+    assert output["outcome"] == "needs_attention"
     assert item["schedule_status"] == "save_failed"
     assert item["draft"]["save_status"] == "failed"
     assert item["draft"]["id"] is None
@@ -130,6 +147,7 @@ def test_soft_rule_warning_requires_confirmation(tmp_path):
     request = single_request("M06", date="2026-11-15", time="10:00")
     output, _ = run_offline(request, store)
     item = output["items"][0]
+    assert output["outcome"] == "needs_confirmation"
     assert item["review_status"] == "warning"
     assert item["schedule_status"] == "pending_confirmation"
     assert item["confirmation_status"] == "pending_user_confirmation"
@@ -142,6 +160,7 @@ def test_step_limit_returns_incomplete(tmp_path):
     store = new_store(tmp_path)
     output, trace = run_offline(single_request("M00"), store, max_steps=1)
     assert output["status"] == "incomplete"
+    assert output["outcome"] == "incomplete"
     assert output["stop_reason"] == "step_limit"
     assert output["limits"]["used_steps"] == 1
     assert output["items"][0]["schedule_status"] == "incomplete"
@@ -155,9 +174,29 @@ def test_tool_limit_returns_incomplete(tmp_path):
     store = new_store(tmp_path)
     output, _ = run_offline(single_request("M00"), store, max_tool_calls=2)
     assert output["status"] == "incomplete"
+    assert output["outcome"] == "incomplete"
     assert output["stop_reason"] == "tool_limit"
     assert output["limits"]["used_tool_calls"] == 2
     assert output["items"][0]["schedule_status"] == "incomplete"
+
+
+def test_batch_two_materials(tmp_path):
+    store = new_store(tmp_path)
+    request = make_request(
+        [
+            item("M00", time="10:00"),
+            item("M01", time="18:00"),
+        ],
+        request_id="REQ-BATCH",
+    )
+    output, trace = run_offline(request, store)
+    assert output["status"] == "completed"
+    assert output["outcome"] == "needs_confirmation"
+    assert [entry["material_id"] for entry in output["items"]] == ["M00", "M01"]
+    assert output["items"][0]["schedule_status"] == "drafted"
+    assert output["items"][1]["schedule_status"] == "pending_confirmation"
+    assert store.count_drafts() == 2
+    assert output["limits"]["used_steps"] <= output["limits"]["max_steps"]
 
 
 def test_no_publish_tool_and_no_published_output(tmp_path):

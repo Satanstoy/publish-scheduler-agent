@@ -127,6 +127,7 @@ class TraceRecorder:
             "steps": self.steps,
             "outcome": {
                 "status": output["status"],
+                "outcome": output["outcome"],
                 "stop_reason": output["stop_reason"],
                 "published": output["published"],
                 "summary": output["summary"],

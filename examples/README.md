@@ -16,6 +16,8 @@
 | `08-soft-warning` | M06，时长 100 分钟 | `pending_confirmation` | 软警告 `LONG_DURATION_REVIEW`，草稿待确认 |
 | `09-confirm` | M01 待确认草稿执行 `confirm` | `user_confirmed` | 仍是 `status=draft`，`published=false` |
 | `10-step-limit` | M00，限制 1 个模型步 | `incomplete` | 只读取素材后停止，未保存草稿 |
+| `11-vague-confirm` | M01 待确认草稿，用户回复“可以” | `confirmed` | 只有一份 pending 时确认，仍是草稿，`published=false` |
+| `12-ambiguous-confirm` | M01 + M06 两份 pending，用户回复“继续” | `needs_clarification` | 列出两份草稿，不确认任何一份，store 仍有两份 |
 
 复现单条用例：
 
@@ -30,11 +32,13 @@ python3 run.py run \
   --trace /tmp/trace.json
 ```
 
-复现全部离线用例：
+复现 `01`–`10` 离线用例：
 
 ```bash
 python3 scripts/build_examples.py
 ```
+
+`11-vague-confirm`、`12-ambiguous-confirm` 是固定的确认解析示例，运行命令见各自目录的 `manifest.json`。
 
 正常和待确认用例退出码为 0；缺资料、规则阻断、硬冲突、保存失败退出码为 1。退出码只表示是否需要人工处理，不改变输出里的逐项状态。
 
@@ -69,7 +73,30 @@ live 目录包含 `input.json`、`output.json`、`trace.json`、`store.json` 和
 
 ## 测试结果
 
-`examples/test-results.txt` 是 `python3 -m pytest -v -o addopts=''` 的实际输出，当前 **72 passed**。`docs/03-evaluation.md` 的测试引用指向该文件和对应测试名。
+`examples/test-results.txt` 是 `python3 -m pytest -v -o addopts=''` 的实际输出，当前 **82 passed**。`docs/03-evaluation.md` 的测试引用指向该文件和对应测试名。
+
+## 模糊确认
+
+`confirm` 要求显式 `--draft-id`；`confirm-text` 是对模糊回复的受限解析层：
+
+```bash
+python3 run.py confirm-text \
+  --state-dir .runs/11-vague-confirm \
+  --data-dir data \
+  --message "可以" \
+  --now 2026-11-10T09:00:00+08:00
+```
+
+规则：
+
+- 只有恰好一份 `pending_user_confirmation` 草稿时，“可以 / 没问题 / 继续 / 确认 / OK”才会确认这一份。
+- 有两份及以上待确认草稿时，即使说“可以”也只返回 `needs_clarification`，列出草稿，不确认任何一份。
+- “取消 / 不考虑”只保留 pending，不确认。
+- 识别不了的消息返回 `needs_clarification`，不改状态。
+- 带时间或修改意图的消息（如“可以，但改成 20:00”）不自动确认，要求修改请求后重跑。
+- 硬冲突没有草稿，说“可以”不会改变硬性发布时间，返回 `no_pending`。
+- 确认时如果时段已被新排期占用，返回 `confirm_conflict`，草稿保持 pending。
+- 任何情况下 `published=false`。
 
 ## Live 调用记录
 

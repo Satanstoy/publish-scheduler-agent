@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "action": "confirmed",
+  "message": "已将‘可以’解释为确认唯一待确认草稿 DRF-F5AC5C49C1；仍然是草稿，未发布。",
+  "intent": "affirm",
+  "pending": [],
+  "draft": {
+    "id": "DRF-F5AC5C49C1",
+    "request_key": "RQ-1CAACCF9D48235AF",
+    "material_id": "M01",
+    "content_version": "v2",
+    "channel": "wechat",
+    "slot": {
+      "date": "2026-11-12",
+      "start": "19:00",
+      "end": "20:00",
+      "timezone": "Asia/Shanghai"
+    },
+    "requested_slot": {
+      "date": "2026-11-12",
+      "start": "18:00",
+      "end": "19:00",
+      "constraint": "preferred",
+      "timezone": "Asia/Shanghai"
+    },
+    "status": "draft",
+    "confirmation_status": "user_confirmed",
+    "risks": [],
+    "pending_items": [
+      {
+        "code": "ALTERNATIVE_SLOT",
+        "message": "建议 19:00 替代原定 18:00，需用户确认。"
+      }
+    ],
+    "decision_basis": "请求 18:00 冲突，选择同日备选 19:00，需用户确认。",
+    "created_at": "2026-11-10T09:00:00+08:00",
+    "published": false,
+    "confirmed_at": "2026-11-10T09:00:00+08:00"
+  },
+  "published": false
+}

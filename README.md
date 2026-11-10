@@ -68,6 +68,8 @@ python3 scripts/build_examples.py
 | 软规则警告 | `examples/08-soft-warning` | 100 分钟长视频，pending 草稿 |
 | 确认边界 | `examples/09-confirm` | `user_confirmed`，仍是 draft，`published=false` |
 | 执行上限 | `examples/10-step-limit` | `incomplete`，不伪造成功 |
+| 模糊确认 | `examples/11-vague-confirm` | 唯一 pending 时“可以”才确认；多份时追问 |
+| 模糊确认（多份） | `examples/12-ambiguous-confirm` | “继续”只返回 `needs_clarification`，不确认任何一份 |
 
 `examples/README.md` 有逐条说明、实际输出和 Trace 对照。
 
@@ -122,6 +124,18 @@ python3 run.py confirm \
 ```
 
 `confirm` 只把 `confirmation_status` 改成 `user_confirmed`，`status` 仍是 `draft`，`published=false`。
+
+用户回复可能是“可以 / 没问题 / 继续”，也可能有多份 pending 草稿。`confirm-text` 是一个受限解析层：
+
+```bash
+python3 run.py confirm-text \
+  --state-dir .runs/soft \
+  --data-dir data \
+  --message "可以" \
+  --now 2026-11-10T09:00:00+08:00
+```
+
+只有恰好一份待确认草稿时，affirmative 词才会确认它。多份 pending 时，即使说“可以”也只返回 `needs_clarification`，列出草稿，不确认任何一份；无法识别的消息会追问；“取消”保留 pending；硬冲突没有草稿，“可以”不会改变硬性发布时间。确认时如果时段已被占用，返回 `confirm_conflict`，草稿保持 pending；带时间或修改意图的消息（如“可以，但改成 20:00”）不会被当成确认。完整规则和例子见 `examples/11-vague-confirm/`、`examples/12-ambiguous-confirm/`。
 
 ## 模型接入
 
@@ -221,6 +235,7 @@ python3 -m pytest -v -o addopts="" > examples/test-results.txt
 - 离线 Agent 的正常/缺失/规则/软冲突/硬冲突/重复/失败/上限路径。
 - 模型提前 finish 被拒绝后继续、模型错误、纯文本停止。
 - CLI 输出文件、退出码、confirm。
+- 模糊确认：唯一 pending、多份 pending、否定、无法识别、硬冲突、确认冲突。
 - OpenAI tool call 解析；本机 OpenCode JSON 协议解析。
 
 ## 设计要点

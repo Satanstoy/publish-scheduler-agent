@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "action": "needs_clarification",
+  "message": "当前有 2 份待确认草稿：M01（DRF-F5AC5C49C1，19:00）、M06（DRF-97098368EA，10:00）。请指明要确认哪一份，不能用一句‘可以/继续’确认全部。",
+  "intent": "affirm",
+  "pending": [
+    {
+      "draft_id": "DRF-F5AC5C49C1",
+      "material_id": "M01",
+      "slot": {
+        "date": "2026-11-12",
+        "start": "19:00",
+        "end": "20:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "confirmation_status": "pending_user_confirmation"
+    },
+    {
+      "draft_id": "DRF-97098368EA",
+      "material_id": "M06",
+      "slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "timezone": "Asia/Shanghai"
+      },
+      "confirmation_status": "pending_user_confirmation"
+    }
+  ],
+  "draft": null,
+  "published": false
+}

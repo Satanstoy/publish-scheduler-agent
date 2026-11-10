@@ -1,0 +1,163 @@
+{
+  "schema_version": "1.0",
+  "run_id": "RUN-REQ-AMBIG-87BB2318",
+  "request_id": "REQ-AMBIG",
+  "engine": "offline-mock",
+  "model": "reference-policy",
+  "mode_note": "离线 Mock 仅验证流程与护栏，不代表真实模型决策效果。",
+  "status": "completed",
+  "outcome": "needs_confirmation",
+  "stop_reason": "finished",
+  "published": false,
+  "limits": {
+    "max_steps": 12,
+    "max_tool_calls": 20,
+    "used_steps": 9,
+    "used_tool_calls": 9
+  },
+  "summary": {
+    "total": 2,
+    "drafted": 0,
+    "pending_confirmation": 2,
+    "blocked_rule": 0,
+    "blocked_conflict": 0,
+    "needs_input": 0,
+    "save_failed": 0,
+    "incomplete": 0
+  },
+  "items": [
+    {
+      "material_id": "M01",
+      "title": "城市夜跑指南",
+      "status": "pending_confirmation",
+      "review_status": "passed",
+      "schedule_status": "pending_confirmation",
+      "risks": [],
+      "missing_fields": [],
+      "requested_slot": {
+        "date": "2026-11-12",
+        "start": "18:00",
+        "end": "19:00",
+        "constraint": "preferred",
+        "channel": "wechat",
+        "timezone": "Asia/Shanghai"
+      },
+      "suggested_slot": {
+        "date": "2026-11-12",
+        "start": "19:00",
+        "end": "20:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "slot_conflict": {
+        "has_conflict": true,
+        "conflicts": [
+          {
+            "entry_id": "S-001",
+            "material_id": "M90",
+            "start": "18:00",
+            "end": "19:00",
+            "source": "schedule",
+            "channel": "wechat",
+            "request_key": null
+          }
+        ]
+      },
+      "confirmation_status": "pending_user_confirmation",
+      "pending_items": [
+        {
+          "code": "ALTERNATIVE_SLOT",
+          "message": "建议 19:00 替代原定 18:00，需用户确认。"
+        }
+      ],
+      "draft": {
+        "id": "DRF-F5AC5C49C1",
+        "save_status": "saved",
+        "deduplicated": false,
+        "status": "draft",
+        "published": false
+      },
+      "error": null,
+      "decision_basis": "请求时段 18:00 冲突，19:00 为同日替代时段；软约束，保存草稿并标记待确认。",
+      "published": false
+    },
+    {
+      "material_id": "M06",
+      "title": "长视频：年度回顾",
+      "status": "pending_confirmation",
+      "review_status": "warning",
+      "schedule_status": "pending_confirmation",
+      "risks": [
+        {
+          "code": "LONG_DURATION_REVIEW",
+          "severity": "warning",
+          "message": "时长 100 分钟超过 90 分钟，建议人工确认。",
+          "field": "duration_minutes"
+        }
+      ],
+      "missing_fields": [],
+      "requested_slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "constraint": "preferred",
+        "channel": "wechat",
+        "timezone": "Asia/Shanghai"
+      },
+      "suggested_slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "timezone": "Asia/Shanghai"
+      },
+      "slot_conflict": {
+        "has_conflict": false,
+        "conflicts": []
+      },
+      "confirmation_status": "pending_user_confirmation",
+      "pending_items": [
+        {
+          "code": "LONG_DURATION_REVIEW",
+          "message": "时长 100 分钟超过 90 分钟，建议人工确认。 需用户确认。"
+        }
+      ],
+      "draft": {
+        "id": "DRF-97098368EA",
+        "save_status": "saved",
+        "deduplicated": false,
+        "status": "draft",
+        "published": false
+      },
+      "error": null,
+      "decision_basis": "规则命中软警告，已保存草稿并标记待确认。",
+      "published": false
+    }
+  ],
+  "proposed_schedule": [
+    {
+      "material_id": "M01",
+      "draft_id": "DRF-F5AC5C49C1",
+      "slot": {
+        "date": "2026-11-12",
+        "start": "19:00",
+        "end": "20:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "confirmation_status": "pending_user_confirmation"
+    },
+    {
+      "material_id": "M06",
+      "draft_id": "DRF-97098368EA",
+      "slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "timezone": "Asia/Shanghai"
+      },
+      "confirmation_status": "pending_user_confirmation"
+    }
+  ],
+  "confirmation_required": [
+    "M01",
+    "M06"
+  ]
+}

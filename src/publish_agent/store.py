@@ -114,6 +114,21 @@ class JsonStore:
             draft = self._drafts["drafts"].get(draft_id)
             return copy.deepcopy(draft) if draft else None
 
+    def pending_drafts(self) -> list[dict[str, Any]]:
+        with self._locked():
+            pending = [
+                copy.deepcopy(draft)
+                for draft in self._drafts["drafts"].values()
+                if draft.get("confirmation_status") == "pending_user_confirmation"
+            ]
+        pending.sort(
+            key=lambda draft: (
+                str(draft.get("material_id", "")),
+                str((draft.get("slot") or {}).get("start", "")),
+            )
+        )
+        return pending
+
     def _busy_entries_unlocked(
         self,
         day: str,

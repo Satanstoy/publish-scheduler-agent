@@ -31,7 +31,7 @@ $ python3 -m pytest -q
 ..................................................................       [100%]
 ```
 
-当前收集到 **72 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
+当前收集到 **82 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
 
 ## 3. 验收场景与结果
 
@@ -46,6 +46,8 @@ $ python3 -m pytest -q
 | 保存失败 | `test_save_failure_is_reported_without_draft` | `save_failed`，无草稿，明确错误 | 通过 | `examples/07-save-failure/output.json` |
 | 软规则警告 | `test_soft_rule_warning_requires_confirmation` | `warning`，pending 草稿 | 通过 | `examples/08-soft-warning/output.json` |
 | 确认边界 | `test_cli_confirm_keeps_draft_unpublished` | `user_confirmed`，仍是 draft | 通过 | `examples/09-confirm/confirm.json` |
+| 模糊确认 | `test_affirmative_confirms_only_pending_draft` | 唯一 pending 时“可以”可确认；多份时追问 | 通过 | `examples/11-vague-confirm/confirm.output.json` |
+| 模糊确认（多份） | `test_multiple_pending_never_confirms_all_with_one_word` | “继续”不确认任何一份 | 通过 | `examples/12-ambiguous-confirm/confirm.output.json` |
 | 步数上限 | `test_step_limit_returns_incomplete` | `incomplete`，不伪造成功 | 通过 | `examples/10-step-limit/output.json` |
 | 工具调用上限 | `test_tool_limit_returns_incomplete` | `incomplete` | 通过 | 测试内断言 |
 | 更换占用时段 | `test_conflict_after_19_is_occupied_selects_20` | 19:00 也被占用时改选 20:00 | 通过 | 测试内断言 |
@@ -131,6 +133,23 @@ store.json: {"drafts": {"DRF-F5AC5C49C1": ...}, "index": {"RQ-...": "DRF-F5AC5C4
 ```
 
 Trace 只有一条 `get_material` 工具结果，`next_action=end`，没有 `save_draft`，store 为空。达到上限时返回未完成状态，不伪造终态。
+
+### 3.5 模糊确认
+
+用户可能回复“可以 / 没问题 / 继续 / 取消”，也可能一次有多份 pending 草稿。`confirm-text` 是受限解析层，不调用模型，避免把状态变更交给模糊语义：
+
+- 恰好一份 pending 草稿时，affirmative 词才会确认这一份。
+- 多份 pending 时，affirmative 词也只返回 `needs_clarification`，列出草稿，不确认任何一份。
+- 否定词保留 pending；无法识别时追问；不改变状态。
+- 带时间或修改意图的消息（如“可以，但改成 20:00”）不自动确认，要求修改请求后重跑。
+- 硬冲突没有草稿，回复“可以”返回 `no_pending`，硬性发布时间不变。
+- 确认时草稿时段被新排期占用，返回 `confirm_conflict`，草稿保持 pending。
+- 确认后仍是 `status=draft`，`published=false`。
+
+实际记录：
+
+- `examples/11-vague-confirm/confirm.output.json`：M01 软冲突生成唯一 pending 草稿，消息“可以”，确认成功。
+- `examples/12-ambiguous-confirm/confirm.output.json`：M01 + M06 两份 pending，消息“继续”，返回 `needs_clarification`，两份草稿都没有被确认。
 
 ## 4. 真实模型 Trace
 

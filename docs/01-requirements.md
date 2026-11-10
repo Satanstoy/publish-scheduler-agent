@@ -230,6 +230,9 @@ sha256(material_id | content_version | date | time | constraint | channel)
 - `confirm` 只更新草稿的 `confirmation_status` 为 `user_confirmed`，不改变 `status=draft`，不设置 `published=true`。
 - 确认时重新检查时段冲突；如果草稿创建后时段被占用，返回 `CONFIRM_CONFLICT`，草稿保持待确认。
 - 硬冲突没有草稿，无法确认；用户必须修改请求中的约束类型或时间后重新运行。
+- `confirm-text` 处理“可以 / 没问题 / 继续 / 取消”等模糊回复：只有恰好一份待确认草稿时才可能确认；多份 pending 时返回 `needs_clarification` 并列出草稿；否定词保留 pending；无法识别时追问；任何情况都不发布。
+- `confirm-text` 是确定性解析层，不调用模型。状态变更不能交给模糊语义，避免把“继续”误解释成确认多份排期。
+- 带有时间或修改意图的消息（如“可以，但改成 20:00”）不会被当成确认；返回 `needs_clarification`，草稿保持 pending，要求修改请求后重跑。
 
 ## 8. 功能需求
 

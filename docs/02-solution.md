@@ -349,6 +349,17 @@ save_draft -> SAVE_FAILED
 
 `confirm` 不接受“发布”参数，也没有发布路径。
 
+`confirm-text` 是确认流程的模糊输入层：
+
+- 读取所有 `pending_user_confirmation` 草稿。
+- 只有恰好一份时，才把“可以 / 没问题 / 继续 / 确认 / OK”解释为确认该草稿。
+- 多份 pending 时，affirmative 词也只返回 `needs_clarification`，列出草稿，不确认任何一份。
+- “取消 / 不考虑”保留 pending；无法识别时追问；不改变状态。
+- 硬冲突没有草稿，回复“可以”返回 `no_pending`，不会改变硬性发布时间。
+- 确认冲突返回 `confirm_conflict`，草稿保持 pending。
+- 带时间或修改意图的消息（如“可以，但改成 20:00”）返回 `needs_clarification`，不自动确认；要求修改请求后重跑。
+- 解析层不调用模型，状态变更保持确定性；所有路径 `published=false`。
+
 ## 11. 报告生成
 
 `report.build` 完全基于 ledger 和 store：

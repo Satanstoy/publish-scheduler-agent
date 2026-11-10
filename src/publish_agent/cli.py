@@ -21,6 +21,7 @@ from .config import (
 from .engines import ModelError, OfflineEngine, OpenAIEngine, OpenCodeLocalEngine
 from .ledger import Ledger
 from .models import PublishRequest, RequestValidationError, load_request
+from .resolver import resolve_confirmation
 from .runner import AgentRunner, Limits
 from .store import DraftConflictError, JsonStore, StoreError
 from .tools import ToolRegistry
@@ -66,6 +67,15 @@ def build_parser() -> argparse.ArgumentParser:
     confirm.add_argument("--state-dir", required=True)
     confirm.add_argument("--data-dir", default="data")
     confirm.add_argument("--now", default=None)
+
+    confirm_text = subparsers.add_parser(
+        "confirm-text",
+        help="用自然语言确认/拒绝唯一待确认草稿；多份时追问",
+    )
+    confirm_text.add_argument("--message", required=True)
+    confirm_text.add_argument("--state-dir", required=True)
+    confirm_text.add_argument("--data-dir", default="data")
+    confirm_text.add_argument("--now", default=None)
     return parser
 
 
@@ -165,6 +175,13 @@ def _confirm(args) -> int:
     return 0
 
 
+def _confirm_text(args) -> int:
+    store = JsonStore(args.data_dir, args.state_dir)
+    result = resolve_confirmation(args.message, store, now=parse_now(args.now))
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     load_env()
     parser = build_parser()
@@ -174,6 +191,8 @@ def main(argv: list[str] | None = None) -> int:
             return _run(args)
         if args.command == "confirm":
             return _confirm(args)
+        if args.command == "confirm-text":
+            return _confirm_text(args)
         parser.error("unknown command")
         return 2
     except (RequestValidationError, json.JSONDecodeError, OSError) as exc:

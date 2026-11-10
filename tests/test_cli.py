@@ -96,6 +96,30 @@ def test_cli_confirm_keeps_draft_unpublished(tmp_path, capsys):
     assert confirmed["published"] is False
 
 
+def test_cli_confirm_text_affirmative(tmp_path, capsys):
+    request_path = _request_file(tmp_path, material_id="M01", time="18:00")
+    assert main(_run_args(tmp_path, request_path)) == 0
+    capsys.readouterr()
+    code = main(
+        [
+            "confirm-text",
+            "--state-dir",
+            str(tmp_path / "state"),
+            "--data-dir",
+            str(DATA_DIR),
+            "--message",
+            "可以",
+            "--now",
+            SUBMITTED_AT,
+        ]
+    )
+    assert code == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["action"] == "confirmed"
+    assert result["draft"]["status"] == "draft"
+    assert result["published"] is False
+
+
 def test_cli_save_failure_exit_code(tmp_path):
     request_path = _request_file(tmp_path, material_id="M05", time="21:00")
     code = main(_run_args(tmp_path, request_path, "--fault", "save_draft"))

@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "drafts": {
+    "DRF-F5AC5C49C1": {
+      "id": "DRF-F5AC5C49C1",
+      "request_key": "RQ-1CAACCF9D48235AF",
+      "material_id": "M01",
+      "content_version": "v2",
+      "channel": "wechat",
+      "slot": {
+        "date": "2026-11-12",
+        "start": "19:00",
+        "end": "20:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "requested_slot": {
+        "date": "2026-11-12",
+        "start": "18:00",
+        "end": "19:00",
+        "constraint": "preferred",
+        "timezone": "Asia/Shanghai"
+      },
+      "status": "draft",
+      "confirmation_status": "pending_user_confirmation",
+      "risks": [],
+      "pending_items": [
+        {
+          "code": "ALTERNATIVE_SLOT",
+          "message": "建议 19:00 替代原定 18:00，需用户确认。"
+        }
+      ],
+      "decision_basis": "请求 18:00 冲突，选择同日备选 19:00，需用户确认。",
+      "created_at": "2026-11-10T09:00:00+08:00",
+      "published": false
+    },
+    "DRF-97098368EA": {
+      "id": "DRF-97098368EA",
+      "request_key": "RQ-BC4A35FE029445E7",
+      "material_id": "M06",
+      "content_version": "v1",
+      "channel": "wechat",
+      "slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "timezone": "Asia/Shanghai"
+      },
+      "requested_slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "constraint": "preferred",
+        "timezone": "Asia/Shanghai"
+      },
+      "status": "draft",
+      "confirmation_status": "pending_user_confirmation",
+      "risks": [
+        {
+          "code": "LONG_DURATION_REVIEW",
+          "severity": "warning",
+          "message": "时长 100 分钟超过 90 分钟，建议人工确认。",
+          "field": "duration_minutes"
+        }
+      ],
+      "pending_items": [
+        {
+          "code": "LONG_DURATION_REVIEW",
+          "message": "时长 100 分钟超过 90 分钟，建议人工确认。 需用户确认。"
+        }
+      ],
+      "decision_basis": "规则命中软警告，按请求时段保存草稿并待确认。",
+      "created_at": "2026-11-10T09:00:00+08:00",
+      "published": false
+    }
+  },
+  "index": {
+    "RQ-1CAACCF9D48235AF": "DRF-F5AC5C49C1",
+    "RQ-BC4A35FE029445E7": "DRF-97098368EA"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "case": "11-vague-confirm",
+  "input": "input.json",
+  "output": "output.json",
+  "trace": "trace.json",
+  "store_before_confirm": "store-before-confirm.json",
+  "store_after_confirm": "store-after-confirm.json",
+  "store": "store.json",
+  "confirm_output": "confirm.output.json",
+  "message": "可以",
+  "run_command": "python3 run.py run --request examples/11-vague-confirm/input.json --data-dir data --state-dir .runs/11-vague-confirm --engine offline --now 2026-11-10T09:00:00+08:00 --output examples/11-vague-confirm/output.json --trace examples/11-vague-confirm/trace.json",
+  "confirm_command": "python3 run.py confirm-text --state-dir .runs/11-vague-confirm --data-dir data --message \"可以\" --now 2026-11-10T09:00:00+08:00 > examples/11-vague-confirm/confirm.output.json",
+  "expected": "confirmed only because exactly one pending draft; still published=false"
+}

@@ -15,6 +15,8 @@ SIMPLE_OFFLINE = [
     "07-save-failure",
     "08-soft-warning",
     "10-step-limit",
+    "11-vague-confirm",
+    "12-ambiguous-confirm",
 ]
 LIVE_CASES = [
     "01-normal",
@@ -76,6 +78,21 @@ def test_offline_examples_have_input_output_trace_store_manifest():
     confirmed = _read(confirm / "confirm.json")
     assert confirmed["confirmation_status"] == "user_confirmed"
     assert confirmed["published"] is False
+
+    vague = EXAMPLES / "11-vague-confirm"
+    for name in ["input.json", "output.json", "trace.json", "store.json", "manifest.json", "confirm.output.json"]:
+        assert (vague / name).exists(), f"11-vague-confirm missing {name}"
+    vague_confirm = _read(vague / "confirm.output.json")
+    assert vague_confirm["action"] == "confirmed"
+    assert vague_confirm["draft"]["confirmation_status"] == "user_confirmed"
+    assert vague_confirm["published"] is False
+
+    ambiguous = EXAMPLES / "12-ambiguous-confirm"
+    ambiguous_confirm = _read(ambiguous / "confirm.output.json")
+    assert ambiguous_confirm["action"] == "needs_clarification"
+    assert len(ambiguous_confirm["pending"]) == 2
+    assert ambiguous_confirm["published"] is False
+    assert len(_read(ambiguous / "store.json")["drafts"]) == 2
 
 
 def test_live_examples_are_real_model_runs_with_complete_artifacts():

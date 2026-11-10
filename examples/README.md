@@ -18,6 +18,8 @@
 | `10-step-limit` | M00，限制 1 个模型步 | `incomplete` | 只读取素材后停止，未保存草稿 |
 | `11-vague-confirm` | M01 待确认草稿，用户回复“可以” | `confirmed` | 只有一份 pending 时确认，仍是草稿，`published=false` |
 | `12-ambiguous-confirm` | M01 + M06 两份 pending，用户回复“继续” | `needs_clarification` | 列出两份草稿，不确认任何一份，store 仍有两份 |
+| `13-chat-sim` | bash 交互，离线：排 M01 18:00 → 可以 → 状态 → 退出 | `confirmed` | 终端 transcript、最后一次 output/trace/store |
+| `14-chat-live` | bash 交互，真实模型：同样的输入 | `confirmed` | `engine=live-opencode-local`，真实 Trace |
 
 复现单条用例：
 
@@ -74,6 +76,39 @@ live 目录包含 `input.json`、`output.json`、`trace.json`、`store.json` 和
 ## 测试结果
 
 `examples/test-results.txt` 是 `python3 -m pytest -v -o addopts=''` 的实际输出，当前 **82 passed**。`docs/03-evaluation.md` 的测试引用指向该文件和对应测试名。
+
+## 交互式 bash
+
+```bash
+python3 run.py chat \
+  --data-dir data \
+  --state-dir .runs/chat-sim \
+  --engine offline \
+  --now 2026-11-10T09:00:00+08:00
+```
+
+进入后可以直接输入：
+
+```text
+排 M01 2026-11-12 18:00
+可以
+状态
+退出
+```
+
+`13-chat-sim/transcript.txt` 是离线引擎下用管道喂入同样输入得到的终端记录；`output.json`、`trace.json`、`store.json` 是最后一次运行的输出。
+
+要试真实模型，把 `--engine offline` 换成 `--engine opencode-local`，并设置 `OPENCODE_CLI_PATH`：
+
+```bash
+OPENCODE_CLI_PATH="/path/to/opencode-cli" python3 run.py chat \
+  --data-dir data \
+  --state-dir .runs/chat-live \
+  --engine opencode-local \
+  --now 2026-11-10T09:00:00+08:00
+```
+
+`14-chat-live/` 是同一段输入的真实模型运行记录，`transcript.txt` 里能看到 `engine=live-opencode-local` 和 `opencode-go/deepseek-v4.1-flash` 生成的工具调用。
 
 ## 模糊确认
 

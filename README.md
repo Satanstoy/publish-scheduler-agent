@@ -70,6 +70,8 @@ python3 scripts/build_examples.py
 | 执行上限 | `examples/10-step-limit` | `incomplete`，不伪造成功 |
 | 模糊确认 | `examples/11-vague-confirm` | 唯一 pending 时“可以”才确认；多份时追问 |
 | 模糊确认（多份） | `examples/12-ambiguous-confirm` | “继续”只返回 `needs_clarification`，不确认任何一份 |
+| 交互式 bash（离线） | `examples/13-chat-sim` | 输入请求、确认、查看状态、退出 |
+| 交互式 bash（真实模型） | `examples/14-chat-live` | `engine=live-opencode-local`，真实 Trace |
 
 `examples/README.md` 有逐条说明、实际输出和 Trace 对照。
 
@@ -136,6 +138,34 @@ python3 run.py confirm-text \
 ```
 
 只有恰好一份待确认草稿时，affirmative 词才会确认它。多份 pending 时，即使说“可以”也只返回 `needs_clarification`，列出草稿，不确认任何一份；无法识别的消息会追问；“取消”保留 pending；硬冲突没有草稿，“可以”不会改变硬性发布时间。确认时如果时段已被占用，返回 `confirm_conflict`，草稿保持 pending；带时间或修改意图的消息（如“可以，但改成 20:00”）不会被当成确认。完整规则和例子见 `examples/11-vague-confirm/`、`examples/12-ambiguous-confirm/`。
+
+## 交互式 bash Agent（真实模型）
+
+```bash
+OPENCODE_CLI_PATH="/path/to/opencode-cli" python3 run.py chat \
+  --data-dir data \
+  --state-dir .runs/chat-live \
+  --engine opencode-local \
+  --now 2026-11-10T09:00:00+08:00
+```
+
+进入后直接输入：
+
+```text
+排 M01 2026-11-12 18:00
+可以
+状态
+退出
+```
+
+`chat` 使用与 `run` 相同的工具、ledger、报告和确认解析层；每次请求会真实调用模型、执行工具，并把本次 `output.json`、`trace.json` 写到 `--state-dir`。`examples/14-chat-live/transcript.txt` 是一段真实模型运行的终端记录，`examples/14-chat-live/trace.json` 里有每次 `model_decision` 和 `tool_result`。
+
+不带 `--engine` 时，`chat` 会优先选择本机 `opencode-local`，其次选择配置了 `OPENAI_API_KEY` / `OPENAI_MODEL` 的 `live`；两者都没有时会直接报配置错误，不会静默走离线 mock。只验证流程时显式使用 `--engine offline`。
+
+没有本机 OpenCode CLI 时，可以：
+
+- 用 `--engine live` 配合 `.env` 里的 `OPENAI_API_KEY` / `OPENAI_MODEL`，走标准 OpenAI-compatible function calling。
+- 用 `--engine offline` 只验证流程和护栏；这不是真实模型决策，文档会标注。
 
 ## 模型接入
 
@@ -236,6 +266,7 @@ python3 -m pytest -v -o addopts="" > examples/test-results.txt
 - 模型提前 finish 被拒绝后继续、模型错误、纯文本停止。
 - CLI 输出文件、退出码、confirm。
 - 模糊确认：唯一 pending、多份 pending、否定、无法识别、硬冲突、确认冲突。
+- 交互式 bash：请求解析、软冲突、确认、多份 pending、硬冲突、管道输入。
 - OpenAI tool call 解析；本机 OpenCode JSON 协议解析。
 
 ## 设计要点

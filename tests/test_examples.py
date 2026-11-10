@@ -94,6 +94,30 @@ def test_offline_examples_have_input_output_trace_store_manifest():
     assert ambiguous_confirm["published"] is False
     assert len(_read(ambiguous / "store.json")["drafts"]) == 2
 
+    chat = EXAMPLES / "13-chat-sim"
+    for name in ["input.txt", "transcript.txt", "output.json", "trace.json", "store.json", "manifest.json"]:
+        assert (chat / name).exists(), f"13-chat-sim missing {name}"
+    transcript = (chat / "transcript.txt").read_text(encoding="utf-8")
+    assert "pending_confirmation" in transcript
+    assert "confirmed" in transcript
+    assert "published=false" in transcript
+    chat_store = _read(chat / "store.json")
+    assert len(chat_store["drafts"]) == 1
+    assert next(iter(chat_store["drafts"].values()))["confirmation_status"] == "user_confirmed"
+
+    live_chat = EXAMPLES / "14-chat-live"
+    for name in ["input.txt", "transcript.txt", "output.json", "trace.json", "store.json", "manifest.json"]:
+        assert (live_chat / name).exists(), f"14-chat-live missing {name}"
+    live_manifest = _read(live_chat / "manifest.json")
+    assert live_manifest["real_model_call"] is True
+    assert live_manifest["engine"] == "live-opencode-local"
+    live_transcript = (live_chat / "transcript.txt").read_text(encoding="utf-8")
+    assert "engine=live-opencode-local" in live_transcript
+    assert "confirmed" in live_transcript
+    assert "published=false" in live_transcript
+    assert _read(live_chat / "output.json")["published"] is False
+    _assert_trace_complete(_read(live_chat / "trace.json"))
+
 
 def test_live_examples_are_real_model_runs_with_complete_artifacts():
     for case in LIVE_CASES:

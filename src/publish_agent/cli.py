@@ -7,12 +7,14 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .chat import ChatSession, run_chat
 from .config import (
     DEFAULT_MAX_STEPS,
     DEFAULT_MAX_TOOL_CALLS,
     DEFAULT_OPENCODE_MODEL,
     DEFAULT_PROVIDER,
     ConfigError,
+    default_chat_engine,
     default_opencode_cli_path,
     load_env,
     parse_now,
@@ -76,6 +78,30 @@ def build_parser() -> argparse.ArgumentParser:
     confirm_text.add_argument("--state-dir", required=True)
     confirm_text.add_argument("--data-dir", default="data")
     confirm_text.add_argument("--now", default=None)
+
+    chat = subparsers.add_parser(
+        "chat",
+        help="交互式 bash agent；默认优先真实模型（opencode-local/live）",
+    )
+    chat.add_argument("--data-dir", default="data")
+    chat.add_argument("--state-dir", required=True)
+    chat.add_argument(
+        "--engine",
+        choices=["auto", "offline", "live", "opencode-local"],
+        default=None,
+    )
+    chat.add_argument("--now", default=None)
+    chat.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS)
+    chat.add_argument("--max-tool-calls", type=int, default=DEFAULT_MAX_TOOL_CALLS)
+    chat.add_argument(
+        "--fault",
+        action="append",
+        choices=["save_draft"],
+        default=[],
+    )
+    chat.add_argument("--opencode-cli", default=None)
+    chat.add_argument("--opencode-provider", default=None)
+    chat.add_argument("--opencode-model", default=None)
     return parser
 
 
@@ -182,6 +208,34 @@ def _confirm_text(args) -> int:
     return 0 if result["ok"] else 1
 
 
+def _chat(args) -> int:
+    faults = set(args.fault or [])
+    store = JsonStore(args.data_dir, args.state_dir, faults=faults)
+    now = parse_now(args.now)
+    if args.engine in {None, "auto"} and not os.getenv("AGENT_ENGINE"):
+        selected = default_chat_engine()
+        if selected is None:
+            raise ConfigError(
+                "chat 默认要求真实模型：设置 OPENCODE_CLI_PATH 或 OPENAI_API_KEY/OPENAI_MODEL；"
+                "只验证流程请显式使用 --engine offline。"
+            )
+        args.engine = selected
+
+    def engine_factory(request: PublishRequest, session_store: JsonStore):
+        return _engine(args, request, session_store)
+
+    session = ChatSession(
+        store=store,
+        engine_factory=engine_factory,
+        now=now,
+        max_steps=args.max_steps,
+        max_tool_calls=args.max_tool_calls,
+        faults=faults,
+    )
+    run_chat(session)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     load_env()
     parser = build_parser()
@@ -193,6 +247,8 @@ def main(argv: list[str] | None = None) -> int:
             return _confirm(args)
         if args.command == "confirm-text":
             return _confirm_text(args)
+        if args.command == "chat":
+            return _chat(args)
         parser.error("unknown command")
         return 2
     except (RequestValidationError, json.JSONDecodeError, OSError) as exc:

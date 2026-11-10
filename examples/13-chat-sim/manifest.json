@@ -1,0 +1,12 @@
+{
+  "case": "13-chat-sim",
+  "mode": "interactive bash transcript",
+  "input": "input.txt",
+  "transcript": "transcript.txt",
+  "output": "output.json",
+  "trace": "trace.json",
+  "store": "store.json",
+  "engine": "offline",
+  "command": "cat examples/13-chat-sim/input.txt | python3 run.py chat --data-dir data --state-dir .runs/chat-sim --engine offline --now 2026-11-10T09:00:00+08:00",
+  "expected": "M01 pending at 19:00, then confirmed by \"可以\"; still published=false"
+}

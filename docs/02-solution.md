@@ -436,6 +436,10 @@ save_draft -> SAVE_FAILED
 
 `next_action` 在运行结束后回填为下一条模型决策的第一个工具名；`finish` 成功时为 `end`。Trace 不记录隐藏思维过程，只记录动作、参数、结果摘要和一句话依据。
 
+## 12.1 交互式 chat 的模型选择
+
+`chat` 默认优先真实模型：检测到本机 OpenCode CLI 时用 `opencode-local`，否则用配置了 `OPENAI_API_KEY` / `OPENAI_MODEL` 的 `live`。两者都没有时直接报配置错误，必须显式传 `--engine offline` 才走 Mock。这样交互演示不会在用户不知情时退化成离线策略。
+
 ## 13. 模型接入
 
 ### 13.1 `offline-mock`

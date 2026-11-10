@@ -1,0 +1,30 @@
+素材审核与发布排期 Agent（交互模式）
+素材: M00 秋日通勤穿搭、M01 城市夜跑指南、M02 未命名素材、M03 高收益副业揭秘、M04 双十一预热混剪、M05 直播切片：秋季新品、M06 长视频：年度回顾
+输入 `帮助` 查看命令，`退出` 结束。
+用户> 
+[运行] request=CHAT-0001 engine=live-opencode-local status=completed outcome=needs_confirmation
+[工具调用]
+  → get_material({"material_id": "M01"})  # 开始处理 M01，必须先获取素材信息
+    get_material -> OK: 读取 M01，字段完整
+  → check_rules({"material_id": "M01"})  # 素材字段完整，进入规则检查。
+    check_rules -> OK: 规则检查：无风险
+  → query_slots({"material_id": "M01"})  # 按顺序执行 query_slots。
+    query_slots -> OK: 请求时段 18:00 冲突，最近备选 19:00
+  → save_draft({"material_id": "M01", "date": "2026-11-12", "start": "19:00", "confirmation_status": "pending_user_confirmation", "decision_basis": "preferred 约束请求 18:00 冲突，按规则采用 query_slots 返回的最接近备选 19:00，等待用户确认"})  # 保存 M01 的备选时段草稿，不发布
+    save_draft -> OK: 草稿已保存（仅草稿，未发布）。
+  → finish({"summary": "M01 已处理：preferred 约束下请求 18:00 冲突，已保存 19:00 草稿并标记 pending_user_confirmation，未发布。"})  # 所有素材均有终态，调用 finish 结束。
+    finish -> OK: M01 已处理：preferred 约束下请求 18:00 冲突，已保存 19:00 草稿并标记 pending_user_confirmation，未发布。
+[结果]
+  M01 status=pending_confirmation review=passed schedule=pending_confirmation
+    建议 2026-11-12 19:00-20:00
+    草稿 DRF-F5AC5C49C1 save=saved confirmation=pending_user_confirmation
+    待确认: 建议 19:00 替代原定 18:00，需用户确认。
+    published=false
+待确认草稿 1 份。输入 `可以` / `没问题` / `继续` 确认唯一草稿，或输入 `取消` 保留 pending。
+输出: .runs/chat-live/output.json  Trace: .runs/chat-live/trace.json
+用户> [确认] confirmed：已将‘可以’解释为确认唯一待确认草稿 DRF-F5AC5C49C1；仍然是草稿，未发布。
+  草稿 DRF-F5AC5C49C1 status=draft confirmation=user_confirmed published=false
+用户> 共 1 份草稿：
+  DRF-F5AC5C49C1  M01  2026-11-12 19:00-20:00  confirmation=user_confirmed  status=draft  published=false
+其中待确认 0 份。
+用户> 会话结束。草稿仍然只保存在本地，未发布。

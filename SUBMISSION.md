@@ -10,8 +10,8 @@
 | --- | --- | --- |
 | README 环境、安装、运行、评审入口 | `README.md` | 已具备 |
 | `src/` 代码与模型/工具接入 | `src/publish_agent/` | 已具备 |
-| `tests/` 可执行测试 | `tests/`，82 个测试 | 已具备 |
-| `examples/` 输入、输出、Trace | 12 组离线 + 6 组 live，`examples/README.md` | 已具备 |
+| `tests/` 可执行测试 | `tests/`，89 个测试 | 已具备 |
+| `examples/` 输入、输出、Trace | 14 组示例（含交互）+ 6 组 live，`examples/README.md` | 已具备 |
 | `data/` 合成资料和规则 | `data/materials.json`、`schedule.json`、`rules.json` | 已具备 |
 | `docs/01`–`05` | `docs/01`–`05`，另加 `00`、`06` | 已具备 |
 | 依赖文件 | `requirements.txt`、`pyproject.toml` | 已具备 |
@@ -24,6 +24,7 @@
 | 仅保存草稿、不发布 | 无 publish 工具，所有输出 `published=false` | 已具备 |
 | 重复提交只产生一份草稿 | `examples/06-duplicate`、并发/重复测试 | 已具备 |
 | 模糊用户回复 | `confirm-text`、`examples/11-vague-confirm`、`examples/12-ambiguous-confirm` | 已具备 |
+| 交互式 bash | `chat`、`examples/13-chat-sim/transcript.txt`、`examples/14-chat-live/transcript.txt` | 已具备 |
 | 保存失败明确返回 | `examples/07-save-failure`、`SAVE_FAILED`、`outcome=needs_attention` | 已具备 |
 | 使用框架时注明版本/职责 | 未使用框架，原生 Python 实现 | 已说明 |
 | 不提交真实密钥/隐私数据 | `.env` 忽略，示例为合成数据 | 已具备 |

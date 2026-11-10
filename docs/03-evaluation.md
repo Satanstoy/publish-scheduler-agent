@@ -31,7 +31,7 @@ $ python3 -m pytest -q
 ..................................................................       [100%]
 ```
 
-当前收集到 **82 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
+当前收集到 **89 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
 
 ## 3. 验收场景与结果
 
@@ -48,6 +48,8 @@ $ python3 -m pytest -q
 | 确认边界 | `test_cli_confirm_keeps_draft_unpublished` | `user_confirmed`，仍是 draft | 通过 | `examples/09-confirm/confirm.json` |
 | 模糊确认 | `test_affirmative_confirms_only_pending_draft` | 唯一 pending 时“可以”可确认；多份时追问 | 通过 | `examples/11-vague-confirm/confirm.output.json` |
 | 模糊确认（多份） | `test_multiple_pending_never_confirms_all_with_one_word` | “继续”不确认任何一份 | 通过 | `examples/12-ambiguous-confirm/confirm.output.json` |
+| 交互式 bash（离线） | `test_chat_cli_piped_session` | 输入请求、确认、状态、退出 | 通过 | `examples/13-chat-sim/transcript.txt` |
+| 交互式 bash（真实模型） | 实际运行 | `engine=live-opencode-local`，真实工具调用 | 通过 | `examples/14-chat-live/transcript.txt` |
 | 步数上限 | `test_step_limit_returns_incomplete` | `incomplete`，不伪造成功 | 通过 | `examples/10-step-limit/output.json` |
 | 工具调用上限 | `test_tool_limit_returns_incomplete` | `incomplete` | 通过 | 测试内断言 |
 | 更换占用时段 | `test_conflict_after_19_is_occupied_selects_20` | 19:00 也被占用时改选 20:00 | 通过 | 测试内断言 |
@@ -150,6 +152,26 @@ Trace 只有一条 `get_material` 工具结果，`next_action=end`，没有 `sav
 
 - `examples/11-vague-confirm/confirm.output.json`：M01 软冲突生成唯一 pending 草稿，消息“可以”，确认成功。
 - `examples/12-ambiguous-confirm/confirm.output.json`：M01 + M06 两份 pending，消息“继续”，返回 `needs_clarification`，两份草稿都没有被确认。
+
+### 3.6 交互式 bash
+
+`chat` 子命令让用户在 bash 里输入请求和确认：
+
+```bash
+python3 run.py chat --data-dir data --state-dir .runs/chat-sim \
+  --engine offline --now 2026-11-10T09:00:00+08:00
+```
+
+输入序列：
+
+```text
+排 M01 2026-11-12 18:00
+可以
+状态
+退出
+```
+
+离线终端记录在 `examples/13-chat-sim/transcript.txt`，真实模型终端记录在 `examples/14-chat-live/transcript.txt`；两者的 `output.json`、`trace.json`、`store.json` 也在各自目录。真实模型运行的 `engine=live-opencode-local`，模型是 `opencode-go/deepseek-v4.1-flash`。`chat` 和 `run` 共用同一套工具/ledger/确认解析；确认后仍是 draft，`published=false`。
 
 ## 4. 真实模型 Trace
 

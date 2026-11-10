@@ -1,0 +1,15 @@
+{
+  "case": "14-chat-live",
+  "mode": "interactive bash with real LLM",
+  "engine": "live-opencode-local",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "real_model_call": true,
+  "input": "input.txt",
+  "transcript": "transcript.txt",
+  "output": "output.json",
+  "trace": "trace.json",
+  "store": "store.json",
+  "command": "OPENCODE_CLI_PATH=\"/path/to/opencode-cli\" python3 run.py chat --data-dir data --state-dir .runs/chat-live --engine opencode-local --now 2026-11-10T09:00:00+08:00",
+  "expected": "real model produces 19:00 pending draft, then \"可以\" confirms; still published=false",
+  "note": "本机 OpenCode 实验性 generate/text；直连 opencode-go key 已过期，换机器不一定可复现。"
+}

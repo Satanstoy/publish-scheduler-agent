@@ -1,5 +1,9 @@
 # 04 AI 使用记录
 
+## 0. 参考的公开示例
+
+参考了 `https://github.com/lwz1357/agent-campus-submission-example` 的目录组织：README、`docs/01`–`05`、`src/`、`tests/`、`data/`、`examples/` 和 `examples/test-results.txt`。该示例是另一个题目（短视频脚本生成）的离线确定性 Mock，README 明确说明它不实现真实模型驱动的 ReAct，不作为达标依据；因此只参考材料组织，没有复制其代码、数据或业务逻辑。本题的排期规则、工具、Trace 和 live 证据均为重新实现。
+
 ## 1. 使用范围
 
 本项目使用 OpenCode AI 编程助手（模型 `deepseek-v4.1-flash`，provider `opencode-go`）完成以下工作：

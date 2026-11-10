@@ -8,7 +8,7 @@
 
 ## 快速开始
 
-要求 Python 3.12+。
+要求 Python 3.12+。离线模式没有第三方运行时依赖；`openai` 只在 live 模式导入，`pytest` 只在测试时需要。
 
 ```bash
 python3 -m venv .venv
@@ -39,6 +39,20 @@ cat /tmp/normal-output.json
 ```bash
 python3 scripts/build_examples.py
 ```
+
+## 评审导航
+
+| 检查项 | 入口 |
+| --- | --- |
+| 用户、目标、范围、成功标准 | `docs/01-requirements.md` |
+| 调用流程、动态决策、技术取舍 | `docs/02-solution.md` |
+| 测试预期、实际结果、失败和限制 | `docs/03-evaluation.md`、`examples/test-results.txt` |
+| AI 使用范围、修改和验证 | `docs/04-ai-usage.md` |
+| 最难问题、学习收获、下一步 | `docs/05-retrospective.md` |
+| 代码审查发现和修正 | `docs/06-code-review.md` |
+| 交付规范逐项对照 | `SUBMISSION.md` |
+
+目录组织参考了 `lwz1357/agent-campus-submission-example` 的交付结构；该示例是另一个题目（短视频脚本生成）的离线 mock，不包含真实模型 ReAct，因此只参考目录与材料组织，没有复制其代码或业务内容。
 
 ## 必验场景
 

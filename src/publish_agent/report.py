@@ -243,6 +243,7 @@ def build_report(
         item_result = {
             "material_id": item.material_id,
             "title": material.get("title"),
+            "status": terminal or "incomplete",
             "review_status": review_status,
             "schedule_status": schedule_status,
             "risks": risks,

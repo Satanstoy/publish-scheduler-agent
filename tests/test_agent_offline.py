@@ -15,6 +15,7 @@ def test_normal_schedule(tmp_path):
     assert output["status"] == "completed"
     assert output["outcome"] == "scheduled"
     assert output["published"] is False
+    assert item["status"] == "drafted"
     assert item["review_status"] == "passed"
     assert item["schedule_status"] == "drafted"
     assert item["suggested_slot"]["start"] == "10:00"
@@ -39,6 +40,7 @@ def test_missing_material_info(tmp_path):
     output, trace = run_offline(request, store)
     item = output["items"][0]
     assert output["outcome"] == "needs_attention"
+    assert item["status"] == "needs_input"
     assert item["review_status"] == "needs_input"
     assert item["schedule_status"] == "not_scheduled"
     assert item["draft"]["save_status"] == "not_attempted"
@@ -115,6 +117,30 @@ def test_duplicate_submission_creates_one_draft(tmp_path):
     assert "save_draft" in _tool_sequence(trace)
 
 
+def test_conflict_after_19_is_occupied_selects_20(tmp_path):
+    store = new_store(tmp_path)
+    store.schedule_entries.append(
+        {
+            "id": "S-NEW",
+            "date": "2026-11-12",
+            "start": "19:00",
+            "end": "20:00",
+            "channel": "wechat",
+            "material_id": "M92",
+            "status": "scheduled",
+        }
+    )
+    request = single_request("M01", time="18:00")
+    output, _ = run_offline(request, store)
+    item = output["items"][0]
+    assert output["outcome"] == "needs_confirmation"
+    assert item["schedule_status"] == "pending_confirmation"
+    assert item["suggested_slot"]["start"] == "20:00"
+    assert item["draft"]["save_status"] == "saved"
+    assert item["published"] is False
+    assert store.count_drafts() == 1
+
+
 def test_duplicate_ignores_request_id(tmp_path):
     store = new_store(tmp_path)
     first_request = single_request("M01", time="18:00")
@@ -132,6 +158,7 @@ def test_save_failure_is_reported_without_draft(tmp_path):
     output, trace = run_offline(request, store)
     item = output["items"][0]
     assert output["outcome"] == "needs_attention"
+    assert item["status"] == "save_failed"
     assert item["schedule_status"] == "save_failed"
     assert item["draft"]["save_status"] == "failed"
     assert item["draft"]["id"] is None

@@ -1,0 +1,114 @@
+{
+  "materials": [
+    {
+      "id": "M00",
+      "title": "秋日通勤穿搭",
+      "summary": "三套通勤搭配，适合工作日发布。",
+      "content_version": "v1",
+      "status": "pending",
+      "channel": "wechat",
+      "duration_minutes": 60,
+      "metadata": {
+        "authorized": true,
+        "copyright_owner": "小影内容部",
+        "language": "zh-CN",
+        "contains_minors": false,
+        "file_type": "video"
+      }
+    },
+    {
+      "id": "M01",
+      "title": "城市夜跑指南",
+      "summary": "三条夜跑路线与装备建议。",
+      "content_version": "v2",
+      "status": "pending",
+      "channel": "wechat",
+      "duration_minutes": 60,
+      "metadata": {
+        "authorized": true,
+        "copyright_owner": "小影内容部",
+        "language": "zh-CN",
+        "contains_minors": false,
+        "file_type": "video"
+      }
+    },
+    {
+      "id": "M02",
+      "title": "未命名素材",
+      "summary": "待补充版权与时长信息。",
+      "content_version": "v1",
+      "status": "pending",
+      "channel": "wechat",
+      "metadata": {
+        "authorized": true,
+        "language": "zh-CN",
+        "contains_minors": false,
+        "file_type": "video"
+      }
+    },
+    {
+      "id": "M03",
+      "title": "高收益副业揭秘",
+      "summary": "揭秘网络赌博引流套路与风险。",
+      "content_version": "v1",
+      "status": "pending",
+      "channel": "wechat",
+      "duration_minutes": 45,
+      "metadata": {
+        "authorized": true,
+        "copyright_owner": "小影内容部",
+        "language": "zh-CN",
+        "contains_minors": false,
+        "file_type": "video"
+      }
+    },
+    {
+      "id": "M04",
+      "title": "双十一预热混剪",
+      "summary": "品牌双十一预热混剪。",
+      "content_version": "v1",
+      "status": "pending",
+      "channel": "wechat",
+      "duration_minutes": 60,
+      "metadata": {
+        "authorized": true,
+        "copyright_owner": "小影内容部",
+        "language": "zh-CN",
+        "contains_minors": false,
+        "file_type": "video"
+      }
+    },
+    {
+      "id": "M05",
+      "title": "直播切片：秋季新品",
+      "summary": "秋季新品直播切片。",
+      "content_version": "v1",
+      "status": "pending",
+      "channel": "wechat",
+      "duration_minutes": 30,
+      "metadata": {
+        "authorized": true,
+        "copyright_owner": "小影内容部",
+        "language": "zh-CN",
+        "contains_minors": false,
+        "file_type": "video"
+      }
+    },
+    {
+      "id": "M06",
+      "title": "长视频：年度回顾",
+      "summary": "年度内容回顾。",
+      "content_version": "v1",
+      "status": "pending",
+      "channel": "wechat",
+      "duration_minutes": 100,
+      "metadata": {
+        "authorized": true,
+        "copyright_owner": "小影内容部",
+        "language": "zh-CN",
+        "contains_minors": false,
+        "file_type": "video"
+      }
+    }
+  ]
+}

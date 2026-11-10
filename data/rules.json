@@ -1,0 +1,26 @@
+{
+  "timezone": "Asia/Shanghai",
+  "working_hours": {
+    "start": "09:00",
+    "end": "22:00"
+  },
+  "slot_step_minutes": 30,
+  "max_duration_minutes": 120,
+  "long_duration_warning_minutes": 90,
+  "min_lead_time_hours": 2,
+  "required_fields": [
+    "title",
+    "duration_minutes",
+    "metadata.authorized",
+    "metadata.copyright_owner",
+    "metadata.language"
+  ],
+  "forbidden_terms": [
+    "赌博",
+    "暴力",
+    "色情"
+  ],
+  "blackout_dates": [
+    "2026-11-13"
+  ]
+}

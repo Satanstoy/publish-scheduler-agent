@@ -1,0 +1,25 @@
+{
+  "timezone": "Asia/Shanghai",
+  "entries": [
+    {
+      "id": "S-001",
+      "date": "2026-11-12",
+      "start": "18:00",
+      "end": "19:00",
+      "channel": "wechat",
+      "material_id": "M90",
+      "title": "品牌广告",
+      "status": "scheduled"
+    },
+    {
+      "id": "S-002",
+      "date": "2026-11-14",
+      "start": "18:00",
+      "end": "19:00",
+      "channel": "wechat",
+      "material_id": "M91",
+      "title": "品牌直播",
+      "status": "scheduled"
+    }
+  ]
+}

@@ -4,6 +4,8 @@
 
 核心边界：**系统只保存草稿，不接真实发布。** 工具注册表里没有发布工具，所有输出固定 `published=false`。
 
+技术栈：Python 3.12 + argparse CLI + JSON 文件存储 + pytest。模型接入使用标准 OpenAI-compatible SDK（仅 live 模式）和本机 OpenCode 实验接口（live 证据）。**未使用 LangGraph、Google ADK、AgentScope 等框架**；决策循环、工具护栏、幂等和报告生成都是原生实现。
+
 ## 快速开始
 
 要求 Python 3.12+。
@@ -51,6 +53,7 @@ python3 scripts/build_examples.py
 | 保存失败 | `examples/07-save-failure` | `save_failed`，无草稿，明确错误 |
 | 软规则警告 | `examples/08-soft-warning` | 100 分钟长视频，pending 草稿 |
 | 确认边界 | `examples/09-confirm` | `user_confirmed`，仍是 draft，`published=false` |
+| 执行上限 | `examples/10-step-limit` | `incomplete`，不伪造成功 |
 
 `examples/README.md` 有逐条说明、实际输出和 Trace 对照。
 
@@ -145,6 +148,7 @@ python3 run.py run ... --engine opencode-local
   "items": [
     {
       "material_id": "M00",
+      "status": "drafted",
       "review_status": "passed",
       "schedule_status": "drafted",
       "suggested_slot": {"date": "2026-11-12", "start": "10:00", "end": "11:00"},
@@ -158,8 +162,9 @@ python3 run.py run ... --engine opencode-local
 }
 ```
 
-- `status`：Agent 是否跑完（`completed` / `incomplete` / `failed`）。
-- `outcome`：业务结果（`scheduled` / `needs_confirmation` / `needs_attention` / `incomplete` / `failed`）。
+- 顶层 `status`：Agent 是否跑完（`completed` / `incomplete` / `failed`）。
+- 单项 `status`：该素材的业务终态（`drafted` / `pending_confirmation` / `blocked_conflict` / `blocked_rule` / `needs_input` / `save_failed` / `incomplete`）。
+- `outcome`：整次运行的业务结果（`scheduled` / `needs_confirmation` / `needs_attention` / `incomplete` / `failed`）。
 - `review_status`：`passed` / `warning` / `blocked` / `needs_input` / `unknown`。
 - `schedule_status`：`drafted` / `pending_confirmation` / `blocked_conflict` / `not_scheduled` / `save_failed` / `incomplete`。
 - `draft.save_status`：`saved` / `existing` / `failed` / `not_attempted`。
@@ -190,6 +195,8 @@ run.py               无需安装即可运行的 CLI 入口
 
 ```bash
 python3 -m pytest -q
+# 可读报告写入 examples/test-results.txt
+python3 -m pytest -v -o addopts="" > examples/test-results.txt
 ```
 
 测试覆盖：

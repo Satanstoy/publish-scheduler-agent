@@ -120,6 +120,7 @@
 | --- | --- |
 | `material_id` | 素材 ID |
 | `title` | 素材标题；素材不存在时为 `null` |
+| `status` | 单项业务状态：`drafted` / `pending_confirmation` / `blocked_conflict` / `blocked_rule` / `needs_input` / `save_failed` / `incomplete` |
 | `review_status` | `passed` / `warning` / `blocked` / `needs_input` / `unknown` |
 | `risks` | 风险列表，每项含 `code`、`severity`、`message`、`field` |
 | `requested_slot` | 请求时段，含日期、起止、时区、约束类型；时长未知时 `end` 为 `null` |

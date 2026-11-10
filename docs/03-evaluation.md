@@ -31,7 +31,7 @@ $ python3 -m pytest -q
 ..................................................................       [100%]
 ```
 
-当前收集到 **68 个测试**，全部通过。
+当前收集到 **69 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
 
 ## 3. 验收场景与结果
 
@@ -46,8 +46,9 @@ $ python3 -m pytest -q
 | 保存失败 | `test_save_failure_is_reported_without_draft` | `save_failed`，无草稿，明确错误 | 通过 | `examples/07-save-failure/output.json` |
 | 软规则警告 | `test_soft_rule_warning_requires_confirmation` | `warning`，pending 草稿 | 通过 | `examples/08-soft-warning/output.json` |
 | 确认边界 | `test_cli_confirm_keeps_draft_unpublished` | `user_confirmed`，仍是 draft | 通过 | `examples/09-confirm/confirm.json` |
-| 步数上限 | `test_step_limit_returns_incomplete` | `incomplete`，不伪造成功 | 通过 | 测试内断言 |
+| 步数上限 | `test_step_limit_returns_incomplete` | `incomplete`，不伪造成功 | 通过 | `examples/10-step-limit/output.json` |
 | 工具调用上限 | `test_tool_limit_returns_incomplete` | `incomplete` | 通过 | 测试内断言 |
+| 更换占用时段 | `test_conflict_after_19_is_occupied_selects_20` | 19:00 也被占用时改选 20:00 | 通过 | 测试内断言 |
 | 提前 finish | `test_early_finish_is_rejected_and_loop_continues` | 拒绝后继续处理 | 通过 | Trace 断言 |
 | 模型错误 | `test_model_error_marks_run_failed` | `status=failed` | 通过 | 测试内断言 |
 | 并发重复 | `test_thread_concurrent_same_request_creates_one_draft` | 8 线程只产生 1 份草稿 | 通过 | 测试内断言 |
@@ -105,6 +106,31 @@ store.json: {"drafts": {"DRF-F5AC5C49C1": ...}, "index": {"RQ-...": "DRF-F5AC5C4
 ```
 
 `store.json` 中 `drafts` 只有一个键。重复运行查询时段时排除了同指纹草稿，所以 19:00 仍可用，不会生成 20:00 的第二份草稿。
+
+如果草稿生成后它的时段被新的排期占用，`confirm` 会返回 `CONFIRM_CONFLICT`，草稿保持 `pending_user_confirmation`，不会把冲突草稿标成已确认。测试 `test_confirm_conflict_leaves_draft_pending` 覆盖这个边界。把 18:00 和 19:00 都占用的场景由 `test_conflict_after_19_is_occupied_selects_20` 覆盖，Agent 会选择 20:00。
+
+### 3.4 执行上限
+
+`examples/10-step-limit` 用 `--max-steps 1` 运行 M00：
+
+```json
+{
+  "status": "incomplete",
+  "outcome": "incomplete",
+  "stop_reason": "step_limit",
+  "items": [
+    {
+      "material_id": "M00",
+      "review_status": "unknown",
+      "schedule_status": "incomplete",
+      "draft": {"id": null, "save_status": "not_attempted", "published": false},
+      "published": false
+    }
+  ]
+}
+```
+
+Trace 只有一条 `get_material` 工具结果，`next_action=end`，没有 `save_draft`，store 为空。达到上限时返回未完成状态，不伪造终态。
 
 ## 4. 真实模型 Trace
 
@@ -173,7 +199,7 @@ finish        ok
 | 重复提交 | `examples/06-duplicate`，`test_duplicate_submission_creates_one_draft` |
 | 保存失败 | `examples/07-save-failure`，`test_save_failure_is_reported_without_draft` |
 | 动态决策 | `examples/live/02-missing-info`、`examples/live/07-save-failure` |
-| 执行上限 | `test_step_limit_returns_incomplete`、`test_tool_limit_returns_incomplete` |
+| 执行上限 | `examples/10-step-limit`、`test_step_limit_returns_incomplete`、`test_tool_limit_returns_incomplete` |
 | 不越权发布 | 无 publish 工具，所有 `published=false`，`test_no_publish_tool_and_no_published_output` |
 | 确认边界 | `examples/09-confirm`，`test_cli_confirm_keeps_draft_unpublished` |
 

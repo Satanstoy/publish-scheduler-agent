@@ -1,0 +1,76 @@
+# Examples
+
+每组用例包含 `input.json`、实际 `output.json`、`trace.json` 和 `store.json`。`store.json` 是运行后的 `drafts.json` 快照，用来核对“只产生一份草稿”和“保存失败没有草稿”。
+
+## Offline cases（可复现）
+
+| 目录 | 场景 | 预期 | 运行结果 |
+| --- | --- | --- | --- |
+| `01-normal` | M00，10:00 空闲，无规则风险 | `drafted` | `outcome=scheduled`，草稿 `DRF-A54E0659E7` |
+| `02-missing-info` | M02，缺 `duration_minutes` 和版权方 | `needs_input` | 无时段查询、无草稿 |
+| `03-rule-risk` | M03，摘要命中禁词“赌博” | `blocked_rule` | 无草稿 |
+| `04-soft-conflict` | M01，18:00 已占用，preferred | `pending_confirmation` | 建议 19:00，草稿标 pending，`published=false` |
+| `05-hard-conflict` | M04，18:00 已占用，hard | `blocked_conflict` | 建议 19:00，无草稿，原要求不变 |
+| `06-duplicate` | 同一 M01 请求跑两次 | 第二次 `existing` | 两次同一 `DRF-F5AC5C49C1`，`store.json` 只有一份草稿 |
+| `07-save-failure` | M05，21:00 可用，注入 `save_draft` 故障 | `save_failed` | 无草稿，错误码 `SAVE_FAILED` |
+| `08-soft-warning` | M06，时长 100 分钟 | `pending_confirmation` | 软警告 `LONG_DURATION_REVIEW`，草稿待确认 |
+| `09-confirm` | M01 待确认草稿执行 `confirm` | `user_confirmed` | 仍是 `status=draft`，`published=false` |
+
+复现单条用例：
+
+```bash
+python3 run.py run \
+  --request examples/04-soft-conflict/input.json \
+  --data-dir data \
+  --state-dir .runs/repro-04 \
+  --engine offline \
+  --now 2026-11-10T09:00:00+08:00 \
+  --output /tmp/output.json \
+  --trace /tmp/trace.json
+```
+
+复现全部离线用例：
+
+```bash
+python3 scripts/build_examples.py
+```
+
+正常和待确认用例退出码为 0；缺资料、规则阻断、硬冲突、保存失败退出码为 1。退出码只表示是否需要人工处理，不改变输出里的逐项状态。
+
+## Live cases（真实模型）
+
+`examples/live/` 下的 6 组 Trace 由本机 OpenCode 的 `POST /api/experimental/generate/text` 生成，模型为 `opencode-go/deepseek-v4.1-flash`，engine 标注 `live-opencode-local`。这是实际模型输出，不是 mock；但该接口是实验性接口，评审环境不一定可用。
+
+| 目录 | 真实模型路径 |
+| --- | --- |
+| `live/01-normal` | 读取 → 规则 → 时段 → 保存 → finish |
+| `live/02-missing-info` | 读取后尝试提前 finish，被 `INCOMPLETE_COVERAGE` 拒绝，补做规则检查后结束 |
+| `live/03-rule-risk` | 规则阻断后跳过时段查询和保存 |
+| `live/04-soft-conflict` | 18:00 冲突，选择 19:00，保存 pending 草稿 |
+| `live/05-hard-conflict` | 硬冲突，只给 19:00 备选，不保存 |
+| `live/07-save-failure` | 先输出非法 `confirmation_status=confirmed`，被工具拒绝后改成 `not_required`；随后保存失败，如实结束 |
+
+复现 live 用例（需要本机 OpenCode CLI）：
+
+```bash
+export OPENCODE_CLI_PATH="/path/to/opencode-cli"
+python3 run.py run \
+  --request examples/live/04-soft-conflict/input.json \
+  --data-dir data \
+  --state-dir .runs/live-repro-04 \
+  --engine opencode-local \
+  --now 2026-11-10T09:00:00+08:00 \
+  --output /tmp/live-output.json \
+  --trace /tmp/live-trace.json
+```
+
+live 目录只保留输入、输出和 Trace，没有提交 `store.json`，因为现场重跑会重新生成草稿；草稿 ID 由请求指纹确定，因此同一个输入仍会得到同一个 ID。
+
+## 看 Trace 时重点核对
+
+- `steps[].tool_calls[].arguments`：模型实际传的参数。
+- `steps[].summary` / `data`：工具返回摘要和结构化结果。
+- `steps[].next_action`：下一步动作，能直接看出模型是否根据结果调整。
+- `live/02-missing-info`：`finish` 失败后下一步变成 `check_rules`，是“观察结果后调整”的直接证据。
+- `live/07-save-failure`：先被 `INVALID_ARGUMENTS` 拒绝，再修正参数；最后 `SAVE_FAILED`，没有虚报成功。
+- 所有输出 `published=false`；所有 live Trace 的 `outcome` 与 output 一致。

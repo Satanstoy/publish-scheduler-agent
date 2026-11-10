@@ -1,0 +1,305 @@
+{
+  "schema_version": "1.0",
+  "run_id": "RUN-REQ-NORMAL-DE9D7448",
+  "engine": "live-opencode-local",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "request": {
+    "request_id": "REQ-NORMAL",
+    "submitted_at": "2026-11-10T09:00:00+08:00",
+    "items": [
+      {
+        "material_id": "M00",
+        "date": "2026-11-12",
+        "time": "10:00",
+        "constraint": "preferred",
+        "channel": "wechat",
+        "note": ""
+      }
+    ]
+  },
+  "limits": {
+    "max_steps": 12,
+    "max_tool_calls": 20
+  },
+  "system_prompt_sha256": "4ce47c541479fd0d4451c2cfe72551f2553941750855111732cd6e9bf38205ac",
+  "steps": [
+    {
+      "type": "model_decision",
+      "model_step": 1,
+      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M00\",\"reason\":\"读取 M00 元数据并确认字段完整性\"},\"reason\":\"按顺序处理首个素材，必须先读取素材信息\"}",
+      "tool_calls": [
+        {
+          "id": "call_1",
+          "name": "get_material",
+          "arguments": {
+            "material_id": "M00"
+          },
+          "reason": "按顺序处理首个素材，必须先读取素材信息"
+        }
+      ],
+      "index": 1
+    },
+    {
+      "type": "tool_result",
+      "model_step": 1,
+      "tool_call_id": "call_1",
+      "tool": "get_material",
+      "arguments": {
+        "material_id": "M00"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "读取 M00，字段完整",
+      "data": {
+        "material": {
+          "id": "M00",
+          "title": "秋日通勤穿搭",
+          "summary": "三套通勤搭配，适合工作日发布。",
+          "content_version": "v1",
+          "status": "pending",
+          "channel": "wechat",
+          "duration_minutes": 60,
+          "metadata": {
+            "authorized": true,
+            "copyright_owner": "小影内容部",
+            "language": "zh-CN",
+            "contains_minors": false,
+            "file_type": "video"
+          }
+        },
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "check_rules",
+      "index": 2
+    },
+    {
+      "type": "model_decision",
+      "model_step": 2,
+      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M00\",\"reason\":\"M00 元数据字段完整，按流程进行版权、禁词、日期、时长和工作时段规则检查。\"},\"reason\":\"继续执行素材规则审核。\"}",
+      "tool_calls": [
+        {
+          "id": "call_2",
+          "name": "check_rules",
+          "arguments": {
+            "material_id": "M00"
+          },
+          "reason": "继续执行素材规则审核。"
+        }
+      ],
+      "index": 3
+    },
+    {
+      "type": "tool_result",
+      "model_step": 2,
+      "tool_call_id": "call_2",
+      "tool": "check_rules",
+      "arguments": {
+        "material_id": "M00"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "规则检查：无风险",
+      "data": {
+        "risk_level": "none",
+        "risks": [],
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 1,
+      "next_action": "query_slots",
+      "index": 4
+    },
+    {
+      "type": "model_decision",
+      "model_step": 3,
+      "assistant_text": "{\"tool\":\"query_slots\",\"arguments\":{\"material_id\":\"M00\",\"reason\":\"规则检查无风险，查询 2026-11-12 10:00 的时段冲突及同日替代时段\"},\"reason\":\"规则检查无风险，查询请求时段是否冲突\"}",
+      "tool_calls": [
+        {
+          "id": "call_3",
+          "name": "query_slots",
+          "arguments": {
+            "material_id": "M00"
+          },
+          "reason": "规则检查无风险，查询请求时段是否冲突"
+        }
+      ],
+      "index": 5
+    },
+    {
+      "type": "tool_result",
+      "model_step": 3,
+      "tool_call_id": "call_3",
+      "tool": "query_slots",
+      "arguments": {
+        "material_id": "M00"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "请求时段 10:00 可用",
+      "data": {
+        "request_key": "RQ-A9CE16434439D9BB",
+        "requested": {
+          "date": "2026-11-12",
+          "start": "10:00",
+          "end": "11:00",
+          "constraint": "preferred",
+          "channel": "wechat",
+          "timezone": "Asia/Shanghai"
+        },
+        "conflict": false,
+        "conflicts": [],
+        "alternatives": [],
+        "existing_draft": null,
+        "search_window": {
+          "date": "2026-11-12",
+          "work_start": "09:00",
+          "work_end": "22:00",
+          "earliest_start": "09:00",
+          "step_minutes": 30,
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "save_draft",
+      "index": 6
+    },
+    {
+      "type": "model_decision",
+      "model_step": 4,
+      "assistant_text": "{\"tool\":\"save_draft\",\"arguments\":{\"material_id\":\"M00\",\"date\":\"2026-11-12\",\"start\":\"10:00\",\"confirmation_status\":\"not_required\",\"decision_basis\":\"规则检查无风险，请求时段可用，preferred 约束无冲突\",\"reason\":\"按请求时段保存草稿\"},\"reason\":\"规则通过且请求时段可用，保存 M00 草稿\"}",
+      "tool_calls": [
+        {
+          "id": "call_4",
+          "name": "save_draft",
+          "arguments": {
+            "material_id": "M00",
+            "date": "2026-11-12",
+            "start": "10:00",
+            "confirmation_status": "not_required",
+            "decision_basis": "规则检查无风险，请求时段可用，preferred 约束无冲突"
+          },
+          "reason": "规则通过且请求时段可用，保存 M00 草稿"
+        }
+      ],
+      "index": 7
+    },
+    {
+      "type": "tool_result",
+      "model_step": 4,
+      "tool_call_id": "call_4",
+      "tool": "save_draft",
+      "arguments": {
+        "material_id": "M00",
+        "date": "2026-11-12",
+        "start": "10:00",
+        "confirmation_status": "not_required",
+        "decision_basis": "规则检查无风险，请求时段可用，preferred 约束无冲突"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "草稿已保存（仅草稿，未发布）。",
+      "data": {
+        "draft": {
+          "id": "DRF-A54E0659E7",
+          "request_key": "RQ-A9CE16434439D9BB",
+          "material_id": "M00",
+          "content_version": "v1",
+          "channel": "wechat",
+          "slot": {
+            "date": "2026-11-12",
+            "start": "10:00",
+            "end": "11:00",
+            "timezone": "Asia/Shanghai"
+          },
+          "requested_slot": {
+            "date": "2026-11-12",
+            "start": "10:00",
+            "end": "11:00",
+            "constraint": "preferred",
+            "timezone": "Asia/Shanghai"
+          },
+          "status": "draft",
+          "confirmation_status": "not_required",
+          "risks": [],
+          "pending_items": [],
+          "decision_basis": "规则检查无风险，请求时段可用，preferred 约束无冲突",
+          "created_at": "2026-11-10T09:00:00+08:00",
+          "published": false
+        },
+        "save_status": "saved",
+        "deduplicated": false
+      },
+      "error": null,
+      "elapsed_ms": 2,
+      "next_action": "finish",
+      "index": 8
+    },
+    {
+      "type": "model_decision",
+      "model_step": 5,
+      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M00 已完成规则检查并保存草稿，请求时段可用，终态为 drafted。\",\"reason\":\"所有素材均已处理并具备终态，调用 finish 结束任务。\"},\"reason\":\"M00 已保存草稿且无待处理素材。\"}",
+      "tool_calls": [
+        {
+          "id": "call_5",
+          "name": "finish",
+          "arguments": {
+            "summary": "M00 已完成规则检查并保存草稿，请求时段可用，终态为 drafted。"
+          },
+          "reason": "M00 已保存草稿且无待处理素材。"
+        }
+      ],
+      "index": 9
+    },
+    {
+      "type": "tool_result",
+      "model_step": 5,
+      "tool_call_id": "call_5",
+      "tool": "finish",
+      "arguments": {
+        "summary": "M00 已完成规则检查并保存草稿，请求时段可用，终态为 drafted。"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "M00 已完成规则检查并保存草稿，请求时段可用，终态为 drafted。",
+      "data": {
+        "finished": true
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "end",
+      "index": 10
+    }
+  ],
+  "outcome": {
+    "status": "completed",
+    "outcome": "scheduled",
+    "stop_reason": "finished",
+    "published": false,
+    "summary": {
+      "total": 1,
+      "drafted": 1,
+      "pending_confirmation": 0,
+      "blocked_rule": 0,
+      "blocked_conflict": 0,
+      "needs_input": 0,
+      "save_failed": 0,
+      "incomplete": 0
+    },
+    "proposed_schedule": [
+      {
+        "material_id": "M00",
+        "draft_id": "DRF-A54E0659E7",
+        "slot": {
+          "date": "2026-11-12",
+          "start": "10:00",
+          "end": "11:00",
+          "timezone": "Asia/Shanghai"
+        },
+        "confirmation_status": "not_required"
+      }
+    ]
+  }
+}

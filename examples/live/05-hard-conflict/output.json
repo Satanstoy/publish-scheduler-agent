@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "run_id": "RUN-REQ-HARD-E2DD8202",
+  "request_id": "REQ-HARD",
+  "engine": "live-opencode-local",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "mode_note": "真实模型（本机 OpenCode 实验性 generate/text）；结果仍需人工确认。",
+  "status": "completed",
+  "outcome": "needs_attention",
+  "stop_reason": "finished",
+  "published": false,
+  "limits": {
+    "max_steps": 12,
+    "max_tool_calls": 20,
+    "used_steps": 4,
+    "used_tool_calls": 4
+  },
+  "summary": {
+    "total": 1,
+    "drafted": 0,
+    "pending_confirmation": 0,
+    "blocked_rule": 0,
+    "blocked_conflict": 1,
+    "needs_input": 0,
+    "save_failed": 0,
+    "incomplete": 0
+  },
+  "items": [
+    {
+      "material_id": "M04",
+      "title": "双十一预热混剪",
+      "review_status": "passed",
+      "schedule_status": "blocked_conflict",
+      "risks": [],
+      "missing_fields": [],
+      "requested_slot": {
+        "date": "2026-11-14",
+        "start": "18:00",
+        "end": "19:00",
+        "constraint": "hard",
+        "channel": "wechat",
+        "timezone": "Asia/Shanghai"
+      },
+      "suggested_slot": {
+        "date": "2026-11-14",
+        "start": "19:00",
+        "end": "20:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "slot_conflict": {
+        "has_conflict": true,
+        "conflicts": [
+          {
+            "entry_id": "S-002",
+            "material_id": "M91",
+            "start": "18:00",
+            "end": "19:00",
+            "source": "schedule",
+            "channel": "wechat",
+            "request_key": null
+          }
+        ]
+      },
+      "confirmation_status": "blocked",
+      "pending_items": [
+        {
+          "code": "HARD_CONSTRAINT_CONFLICT",
+          "message": "硬性要求 18:00 与已有排期冲突，不能自动改时段；建议 19:00，需用户决定是否调整要求。"
+        }
+      ],
+      "draft": {
+        "id": null,
+        "save_status": "not_attempted",
+        "deduplicated": false,
+        "status": "not_saved",
+        "published": false
+      },
+      "error": null,
+      "decision_basis": "硬性要求 18:00 与已有排期冲突，硬约束不可自动改时段；建议 19:00，未保存草稿。",
+      "published": false
+    }
+  ],
+  "proposed_schedule": [],
+  "confirmation_required": []
+}

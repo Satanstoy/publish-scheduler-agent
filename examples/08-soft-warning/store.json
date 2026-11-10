@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "drafts": {
+    "DRF-97098368EA": {
+      "id": "DRF-97098368EA",
+      "request_key": "RQ-BC4A35FE029445E7",
+      "material_id": "M06",
+      "content_version": "v1",
+      "channel": "wechat",
+      "slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "timezone": "Asia/Shanghai"
+      },
+      "requested_slot": {
+        "date": "2026-11-15",
+        "start": "10:00",
+        "end": "11:40",
+        "constraint": "preferred",
+        "timezone": "Asia/Shanghai"
+      },
+      "status": "draft",
+      "confirmation_status": "pending_user_confirmation",
+      "risks": [
+        {
+          "code": "LONG_DURATION_REVIEW",
+          "severity": "warning",
+          "message": "时长 100 分钟超过 90 分钟，建议人工确认。",
+          "field": "duration_minutes"
+        }
+      ],
+      "pending_items": [
+        {
+          "code": "LONG_DURATION_REVIEW",
+          "message": "时长 100 分钟超过 90 分钟，建议人工确认。 需用户确认。"
+        }
+      ],
+      "decision_basis": "规则命中软警告，按请求时段保存草稿并待确认。",
+      "created_at": "2026-11-10T09:00:00+08:00",
+      "published": false
+    }
+  },
+  "index": {
+    "RQ-BC4A35FE029445E7": "DRF-97098368EA"
+  }
+}

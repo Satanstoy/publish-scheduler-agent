@@ -1,0 +1,9 @@
+{
+  "case": "06-duplicate",
+  "input": "input.json",
+  "output": "output-run2.json",
+  "trace": "trace-run2.json",
+  "store": "store.json",
+  "command": "/opt/anaconda3/bin/python3 -m publish_agent run --request examples/06-duplicate/input.json --data-dir /Users/shijie/Documents/Default Project/publish-scheduler-agent/data --state-dir .runs/06-duplicate --engine offline --now 2026-11-10T09:00:00+08:00 --output output-run2.json --trace trace-run2.json",
+  "expected": "existing"
+}

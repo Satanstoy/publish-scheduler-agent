@@ -1,0 +1,351 @@
+{
+  "schema_version": "1.0",
+  "run_id": "RUN-REQ-DUP-A0E56C2D",
+  "engine": "offline-mock",
+  "model": "reference-policy",
+  "request": {
+    "request_id": "REQ-DUP",
+    "submitted_at": "2026-11-10T09:00:00+08:00",
+    "items": [
+      {
+        "material_id": "M01",
+        "date": "2026-11-12",
+        "time": "18:00",
+        "constraint": "preferred",
+        "channel": "wechat",
+        "note": ""
+      }
+    ]
+  },
+  "limits": {
+    "max_steps": 12,
+    "max_tool_calls": 20
+  },
+  "system_prompt_sha256": "offline-reference-policy",
+  "steps": [
+    {
+      "type": "model_decision",
+      "model_step": 1,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_1",
+          "name": "get_material",
+          "arguments": {
+            "material_id": "M01"
+          },
+          "reason": "先读取素材元数据，确认字段是否完整。"
+        }
+      ],
+      "index": 1
+    },
+    {
+      "type": "tool_result",
+      "model_step": 1,
+      "tool_call_id": "call_1",
+      "tool": "get_material",
+      "arguments": {
+        "material_id": "M01"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "读取 M01，字段完整",
+      "data": {
+        "material": {
+          "id": "M01",
+          "title": "城市夜跑指南",
+          "summary": "三条夜跑路线与装备建议。",
+          "content_version": "v2",
+          "status": "pending",
+          "channel": "wechat",
+          "duration_minutes": 60,
+          "metadata": {
+            "authorized": true,
+            "copyright_owner": "小影内容部",
+            "language": "zh-CN",
+            "contains_minors": false,
+            "file_type": "video"
+          }
+        },
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "check_rules",
+      "index": 2
+    },
+    {
+      "type": "model_decision",
+      "model_step": 2,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_2",
+          "name": "check_rules",
+          "arguments": {
+            "material_id": "M01"
+          },
+          "reason": "检查版权、禁词、日期和时长规则。"
+        }
+      ],
+      "index": 3
+    },
+    {
+      "type": "tool_result",
+      "model_step": 2,
+      "tool_call_id": "call_2",
+      "tool": "check_rules",
+      "arguments": {
+        "material_id": "M01"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "规则检查：无风险",
+      "data": {
+        "risk_level": "none",
+        "risks": [],
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "query_slots",
+      "index": 4
+    },
+    {
+      "type": "model_decision",
+      "model_step": 3,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_3",
+          "name": "query_slots",
+          "arguments": {
+            "material_id": "M01"
+          },
+          "reason": "查询请求时段是否冲突，并获取备选。"
+        }
+      ],
+      "index": 5
+    },
+    {
+      "type": "tool_result",
+      "model_step": 3,
+      "tool_call_id": "call_3",
+      "tool": "query_slots",
+      "arguments": {
+        "material_id": "M01"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "请求时段 18:00 冲突，最近备选 19:00",
+      "data": {
+        "request_key": "RQ-1CAACCF9D48235AF",
+        "requested": {
+          "date": "2026-11-12",
+          "start": "18:00",
+          "end": "19:00",
+          "constraint": "preferred",
+          "channel": "wechat",
+          "timezone": "Asia/Shanghai"
+        },
+        "conflict": true,
+        "conflicts": [
+          {
+            "entry_id": "S-001",
+            "material_id": "M90",
+            "start": "18:00",
+            "end": "19:00",
+            "source": "schedule",
+            "channel": "wechat",
+            "request_key": null
+          }
+        ],
+        "alternatives": [
+          {
+            "date": "2026-11-12",
+            "start": "19:00",
+            "end": "20:00",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-12",
+            "start": "19:30",
+            "end": "20:30",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-12",
+            "start": "20:00",
+            "end": "21:00",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-12",
+            "start": "20:30",
+            "end": "21:30",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-12",
+            "start": "21:00",
+            "end": "22:00",
+            "timezone": "Asia/Shanghai"
+          }
+        ],
+        "existing_draft": null,
+        "search_window": {
+          "date": "2026-11-12",
+          "work_start": "09:00",
+          "work_end": "22:00",
+          "earliest_start": "09:00",
+          "step_minutes": 30,
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "save_draft",
+      "index": 6
+    },
+    {
+      "type": "model_decision",
+      "model_step": 4,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_4",
+          "name": "save_draft",
+          "arguments": {
+            "material_id": "M01",
+            "date": "2026-11-12",
+            "start": "19:00",
+            "confirmation_status": "pending_user_confirmation",
+            "decision_basis": "请求 18:00 冲突，选择同日备选 19:00，需用户确认。"
+          },
+          "reason": "请求时段冲突，选择备选 19:00 并标记待确认。"
+        }
+      ],
+      "index": 7
+    },
+    {
+      "type": "tool_result",
+      "model_step": 4,
+      "tool_call_id": "call_4",
+      "tool": "save_draft",
+      "arguments": {
+        "material_id": "M01",
+        "date": "2026-11-12",
+        "start": "19:00",
+        "confirmation_status": "pending_user_confirmation",
+        "decision_basis": "请求 18:00 冲突，选择同日备选 19:00，需用户确认。"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "草稿已保存（仅草稿，未发布）。",
+      "data": {
+        "draft": {
+          "id": "DRF-F5AC5C49C1",
+          "request_key": "RQ-1CAACCF9D48235AF",
+          "material_id": "M01",
+          "content_version": "v2",
+          "channel": "wechat",
+          "slot": {
+            "date": "2026-11-12",
+            "start": "19:00",
+            "end": "20:00",
+            "timezone": "Asia/Shanghai"
+          },
+          "requested_slot": {
+            "date": "2026-11-12",
+            "start": "18:00",
+            "end": "19:00",
+            "constraint": "preferred",
+            "timezone": "Asia/Shanghai"
+          },
+          "status": "draft",
+          "confirmation_status": "pending_user_confirmation",
+          "risks": [],
+          "pending_items": [
+            {
+              "code": "ALTERNATIVE_SLOT",
+              "message": "建议 19:00 替代原定 18:00，需用户确认。"
+            }
+          ],
+          "decision_basis": "请求 18:00 冲突，选择同日备选 19:00，需用户确认。",
+          "created_at": "2026-11-10T09:00:00+08:00",
+          "published": false
+        },
+        "save_status": "saved",
+        "deduplicated": false
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "finish",
+      "index": 8
+    },
+    {
+      "type": "model_decision",
+      "model_step": 5,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_5",
+          "name": "finish",
+          "arguments": {
+            "summary": "全部素材已处理；仅保存草稿，未发布。"
+          },
+          "reason": "所有素材已有终态。"
+        }
+      ],
+      "index": 9
+    },
+    {
+      "type": "tool_result",
+      "model_step": 5,
+      "tool_call_id": "call_5",
+      "tool": "finish",
+      "arguments": {
+        "summary": "全部素材已处理；仅保存草稿，未发布。"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "全部素材已处理；仅保存草稿，未发布。",
+      "data": {
+        "finished": true
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "end",
+      "index": 10
+    }
+  ],
+  "outcome": {
+    "status": "completed",
+    "outcome": "needs_confirmation",
+    "stop_reason": "finished",
+    "published": false,
+    "summary": {
+      "total": 1,
+      "drafted": 0,
+      "pending_confirmation": 1,
+      "blocked_rule": 0,
+      "blocked_conflict": 0,
+      "needs_input": 0,
+      "save_failed": 0,
+      "incomplete": 0
+    },
+    "proposed_schedule": [
+      {
+        "material_id": "M01",
+        "draft_id": "DRF-F5AC5C49C1",
+        "slot": {
+          "date": "2026-11-12",
+          "start": "19:00",
+          "end": "20:00",
+          "timezone": "Asia/Shanghai"
+        },
+        "confirmation_status": "pending_user_confirmation"
+      }
+    ]
+  }
+}

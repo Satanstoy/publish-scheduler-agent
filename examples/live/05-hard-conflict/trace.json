@@ -1,0 +1,263 @@
+{
+  "schema_version": "1.0",
+  "run_id": "RUN-REQ-HARD-E2DD8202",
+  "engine": "live-opencode-local",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "request": {
+    "request_id": "REQ-HARD",
+    "submitted_at": "2026-11-10T09:00:00+08:00",
+    "items": [
+      {
+        "material_id": "M04",
+        "date": "2026-11-14",
+        "time": "18:00",
+        "constraint": "hard",
+        "channel": "wechat",
+        "note": ""
+      }
+    ]
+  },
+  "limits": {
+    "max_steps": 12,
+    "max_tool_calls": 20
+  },
+  "system_prompt_sha256": "4ce47c541479fd0d4451c2cfe72551f2553941750855111732cd6e9bf38205ac",
+  "steps": [
+    {
+      "type": "model_decision",
+      "model_step": 1,
+      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"读取 M04 元数据以校验字段和约束\"},\"reason\":\"按规则必须先读取素材元数据\"}",
+      "tool_calls": [
+        {
+          "id": "call_1",
+          "name": "get_material",
+          "arguments": {
+            "material_id": "M04"
+          },
+          "reason": "按规则必须先读取素材元数据"
+        }
+      ],
+      "index": 1
+    },
+    {
+      "type": "tool_result",
+      "model_step": 1,
+      "tool_call_id": "call_1",
+      "tool": "get_material",
+      "arguments": {
+        "material_id": "M04"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "读取 M04，字段完整",
+      "data": {
+        "material": {
+          "id": "M04",
+          "title": "双十一预热混剪",
+          "summary": "品牌双十一预热混剪。",
+          "content_version": "v1",
+          "status": "pending",
+          "channel": "wechat",
+          "duration_minutes": 60,
+          "metadata": {
+            "authorized": true,
+            "copyright_owner": "小影内容部",
+            "language": "zh-CN",
+            "contains_minors": false,
+            "file_type": "video"
+          }
+        },
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "check_rules",
+      "index": 2
+    },
+    {
+      "type": "model_decision",
+      "model_step": 2,
+      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"已读取 M04 且字段完整，继续检查版权、禁词、黑名单日期、时长、工作时段和临期风险。\"},\"reason\":\"按顺序处理素材，get_material 完成后必须执行 check_rules。\"}",
+      "tool_calls": [
+        {
+          "id": "call_2",
+          "name": "check_rules",
+          "arguments": {
+            "material_id": "M04"
+          },
+          "reason": "按顺序处理素材，get_material 完成后必须执行 check_rules。"
+        }
+      ],
+      "index": 3
+    },
+    {
+      "type": "tool_result",
+      "model_step": 2,
+      "tool_call_id": "call_2",
+      "tool": "check_rules",
+      "arguments": {
+        "material_id": "M04"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "规则检查：无风险",
+      "data": {
+        "risk_level": "none",
+        "risks": [],
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "query_slots",
+      "index": 4
+    },
+    {
+      "type": "model_decision",
+      "model_step": 3,
+      "assistant_text": "{\"tool\":\"query_slots\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"规则检查无风险，查询请求时段 2026-11-14 18:00 是否冲突并获取同日替代时段\"},\"reason\":\"按流程在保存草稿前查询时段冲突\"}",
+      "tool_calls": [
+        {
+          "id": "call_3",
+          "name": "query_slots",
+          "arguments": {
+            "material_id": "M04"
+          },
+          "reason": "按流程在保存草稿前查询时段冲突"
+        }
+      ],
+      "index": 5
+    },
+    {
+      "type": "tool_result",
+      "model_step": 3,
+      "tool_call_id": "call_3",
+      "tool": "query_slots",
+      "arguments": {
+        "material_id": "M04"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "请求时段 18:00 冲突，最近备选 19:00",
+      "data": {
+        "request_key": "RQ-E8BDEACB68415E12",
+        "requested": {
+          "date": "2026-11-14",
+          "start": "18:00",
+          "end": "19:00",
+          "constraint": "hard",
+          "channel": "wechat",
+          "timezone": "Asia/Shanghai"
+        },
+        "conflict": true,
+        "conflicts": [
+          {
+            "entry_id": "S-002",
+            "material_id": "M91",
+            "start": "18:00",
+            "end": "19:00",
+            "source": "schedule",
+            "channel": "wechat",
+            "request_key": null
+          }
+        ],
+        "alternatives": [
+          {
+            "date": "2026-11-14",
+            "start": "19:00",
+            "end": "20:00",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-14",
+            "start": "19:30",
+            "end": "20:30",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-14",
+            "start": "20:00",
+            "end": "21:00",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-14",
+            "start": "20:30",
+            "end": "21:30",
+            "timezone": "Asia/Shanghai"
+          },
+          {
+            "date": "2026-11-14",
+            "start": "21:00",
+            "end": "22:00",
+            "timezone": "Asia/Shanghai"
+          }
+        ],
+        "existing_draft": null,
+        "search_window": {
+          "date": "2026-11-14",
+          "work_start": "09:00",
+          "work_end": "22:00",
+          "earliest_start": "09:00",
+          "step_minutes": 30,
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "error": null,
+      "elapsed_ms": 2,
+      "next_action": "finish",
+      "index": 6
+    },
+    {
+      "type": "model_decision",
+      "model_step": 4,
+      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。\",\"reason\":\"M04 已完成 get_material、check_rules、query_slots，硬约束冲突不得保存替代时段，且该素材已有终态。\"},\"reason\":\"所有素材均有终态后调用 finish。\"}",
+      "tool_calls": [
+        {
+          "id": "call_4",
+          "name": "finish",
+          "arguments": {
+            "summary": "M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。"
+          },
+          "reason": "所有素材均有终态后调用 finish。"
+        }
+      ],
+      "index": 7
+    },
+    {
+      "type": "tool_result",
+      "model_step": 4,
+      "tool_call_id": "call_4",
+      "tool": "finish",
+      "arguments": {
+        "summary": "M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。",
+      "data": {
+        "finished": true
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "end",
+      "index": 8
+    }
+  ],
+  "outcome": {
+    "status": "completed",
+    "outcome": "needs_attention",
+    "stop_reason": "finished",
+    "published": false,
+    "summary": {
+      "total": 1,
+      "drafted": 0,
+      "pending_confirmation": 0,
+      "blocked_rule": 0,
+      "blocked_conflict": 1,
+      "needs_input": 0,
+      "save_failed": 0,
+      "incomplete": 0
+    },
+    "proposed_schedule": []
+  }
+}

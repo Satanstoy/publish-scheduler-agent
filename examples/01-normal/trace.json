@@ -1,0 +1,305 @@
+{
+  "schema_version": "1.0",
+  "run_id": "RUN-REQ-NORMAL-F69FA9A8",
+  "engine": "offline-mock",
+  "model": "reference-policy",
+  "request": {
+    "request_id": "REQ-NORMAL",
+    "submitted_at": "2026-11-10T09:00:00+08:00",
+    "items": [
+      {
+        "material_id": "M00",
+        "date": "2026-11-12",
+        "time": "10:00",
+        "constraint": "preferred",
+        "channel": "wechat",
+        "note": ""
+      }
+    ]
+  },
+  "limits": {
+    "max_steps": 12,
+    "max_tool_calls": 20
+  },
+  "system_prompt_sha256": "offline-reference-policy",
+  "steps": [
+    {
+      "type": "model_decision",
+      "model_step": 1,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_1",
+          "name": "get_material",
+          "arguments": {
+            "material_id": "M00"
+          },
+          "reason": "先读取素材元数据，确认字段是否完整。"
+        }
+      ],
+      "index": 1
+    },
+    {
+      "type": "tool_result",
+      "model_step": 1,
+      "tool_call_id": "call_1",
+      "tool": "get_material",
+      "arguments": {
+        "material_id": "M00"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "读取 M00，字段完整",
+      "data": {
+        "material": {
+          "id": "M00",
+          "title": "秋日通勤穿搭",
+          "summary": "三套通勤搭配，适合工作日发布。",
+          "content_version": "v1",
+          "status": "pending",
+          "channel": "wechat",
+          "duration_minutes": 60,
+          "metadata": {
+            "authorized": true,
+            "copyright_owner": "小影内容部",
+            "language": "zh-CN",
+            "contains_minors": false,
+            "file_type": "video"
+          }
+        },
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "check_rules",
+      "index": 2
+    },
+    {
+      "type": "model_decision",
+      "model_step": 2,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_2",
+          "name": "check_rules",
+          "arguments": {
+            "material_id": "M00"
+          },
+          "reason": "检查版权、禁词、日期和时长规则。"
+        }
+      ],
+      "index": 3
+    },
+    {
+      "type": "tool_result",
+      "model_step": 2,
+      "tool_call_id": "call_2",
+      "tool": "check_rules",
+      "arguments": {
+        "material_id": "M00"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "规则检查：无风险",
+      "data": {
+        "risk_level": "none",
+        "risks": [],
+        "missing_fields": []
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "query_slots",
+      "index": 4
+    },
+    {
+      "type": "model_decision",
+      "model_step": 3,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_3",
+          "name": "query_slots",
+          "arguments": {
+            "material_id": "M00"
+          },
+          "reason": "查询请求时段是否冲突，并获取备选。"
+        }
+      ],
+      "index": 5
+    },
+    {
+      "type": "tool_result",
+      "model_step": 3,
+      "tool_call_id": "call_3",
+      "tool": "query_slots",
+      "arguments": {
+        "material_id": "M00"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "请求时段 10:00 可用",
+      "data": {
+        "request_key": "RQ-A9CE16434439D9BB",
+        "requested": {
+          "date": "2026-11-12",
+          "start": "10:00",
+          "end": "11:00",
+          "constraint": "preferred",
+          "channel": "wechat",
+          "timezone": "Asia/Shanghai"
+        },
+        "conflict": false,
+        "conflicts": [],
+        "alternatives": [],
+        "existing_draft": null,
+        "search_window": {
+          "date": "2026-11-12",
+          "work_start": "09:00",
+          "work_end": "22:00",
+          "earliest_start": "09:00",
+          "step_minutes": 30,
+          "timezone": "Asia/Shanghai"
+        }
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "save_draft",
+      "index": 6
+    },
+    {
+      "type": "model_decision",
+      "model_step": 4,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_4",
+          "name": "save_draft",
+          "arguments": {
+            "material_id": "M00",
+            "date": "2026-11-12",
+            "start": "10:00",
+            "confirmation_status": "not_required",
+            "decision_basis": "请求时段无冲突，规则无风险，保存草稿。"
+          },
+          "reason": "时段可用，保存草稿。"
+        }
+      ],
+      "index": 7
+    },
+    {
+      "type": "tool_result",
+      "model_step": 4,
+      "tool_call_id": "call_4",
+      "tool": "save_draft",
+      "arguments": {
+        "material_id": "M00",
+        "date": "2026-11-12",
+        "start": "10:00",
+        "confirmation_status": "not_required",
+        "decision_basis": "请求时段无冲突，规则无风险，保存草稿。"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "草稿已保存（仅草稿，未发布）。",
+      "data": {
+        "draft": {
+          "id": "DRF-A54E0659E7",
+          "request_key": "RQ-A9CE16434439D9BB",
+          "material_id": "M00",
+          "content_version": "v1",
+          "channel": "wechat",
+          "slot": {
+            "date": "2026-11-12",
+            "start": "10:00",
+            "end": "11:00",
+            "timezone": "Asia/Shanghai"
+          },
+          "requested_slot": {
+            "date": "2026-11-12",
+            "start": "10:00",
+            "end": "11:00",
+            "constraint": "preferred",
+            "timezone": "Asia/Shanghai"
+          },
+          "status": "draft",
+          "confirmation_status": "not_required",
+          "risks": [],
+          "pending_items": [],
+          "decision_basis": "请求时段无冲突，规则无风险，保存草稿。",
+          "created_at": "2026-11-10T09:00:00+08:00",
+          "published": false
+        },
+        "save_status": "saved",
+        "deduplicated": false
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "finish",
+      "index": 8
+    },
+    {
+      "type": "model_decision",
+      "model_step": 5,
+      "assistant_text": "",
+      "tool_calls": [
+        {
+          "id": "call_5",
+          "name": "finish",
+          "arguments": {
+            "summary": "全部素材已处理；仅保存草稿，未发布。"
+          },
+          "reason": "所有素材已有终态。"
+        }
+      ],
+      "index": 9
+    },
+    {
+      "type": "tool_result",
+      "model_step": 5,
+      "tool_call_id": "call_5",
+      "tool": "finish",
+      "arguments": {
+        "summary": "全部素材已处理；仅保存草稿，未发布。"
+      },
+      "ok": true,
+      "code": "OK",
+      "summary": "全部素材已处理；仅保存草稿，未发布。",
+      "data": {
+        "finished": true
+      },
+      "error": null,
+      "elapsed_ms": 0,
+      "next_action": "end",
+      "index": 10
+    }
+  ],
+  "outcome": {
+    "status": "completed",
+    "outcome": "scheduled",
+    "stop_reason": "finished",
+    "published": false,
+    "summary": {
+      "total": 1,
+      "drafted": 1,
+      "pending_confirmation": 0,
+      "blocked_rule": 0,
+      "blocked_conflict": 0,
+      "needs_input": 0,
+      "save_failed": 0,
+      "incomplete": 0
+    },
+    "proposed_schedule": [
+      {
+        "material_id": "M00",
+        "draft_id": "DRF-A54E0659E7",
+        "slot": {
+          "date": "2026-11-12",
+          "start": "10:00",
+          "end": "11:00",
+          "timezone": "Asia/Shanghai"
+        },
+        "confirmation_status": "not_required"
+      }
+    ]
+  }
+}

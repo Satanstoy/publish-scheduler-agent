@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-FAIL-467470E4",
+  "run_id": "RUN-REQ-FAIL-12C799E4",
   "engine": "live-opencode-local",
   "model": "opencode-go/deepseek-v4.1-flash",
   "request": {
@@ -26,7 +26,7 @@
     {
       "type": "model_decision",
       "model_step": 1,
-      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M05\",\"reason\":\"读取素材元数据并确认字段完整性\"},\"reason\":\"按流程先获取素材信息\"}",
+      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M05\",\"reason\":\"读取素材元数据并检查字段完整性\"},\"reason\":\"按流程需先获取素材信息\"}",
       "tool_calls": [
         {
           "id": "call_1",
@@ -34,7 +34,7 @@
           "arguments": {
             "material_id": "M05"
           },
-          "reason": "按流程先获取素材信息"
+          "reason": "按流程需先获取素材信息"
         }
       ],
       "index": 1
@@ -77,7 +77,7 @@
     {
       "type": "model_decision",
       "model_step": 2,
-      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M05\",\"reason\":\"M05 字段完整，继续执行版权、禁词、日期、时长和时段规则检查\"},\"reason\":\"按流程 get_material 后需先 check_rules\"}",
+      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M05\",\"reason\":\"已读取 M05 且字段完整，继续检查版权、禁词、黑名单日期、时长、工作时段和临期风险。\"},\"reason\":\"按顺序推进素材审核。\"}",
       "tool_calls": [
         {
           "id": "call_2",
@@ -85,7 +85,7 @@
           "arguments": {
             "material_id": "M05"
           },
-          "reason": "按流程 get_material 后需先 check_rules"
+          "reason": "按顺序推进素材审核。"
         }
       ],
       "index": 3
@@ -114,7 +114,7 @@
     {
       "type": "model_decision",
       "model_step": 3,
-      "assistant_text": "{\"tool\":\"query_slots\",\"arguments\":{\"material_id\":\"M05\",\"reason\":\"M05 元数据完整且规则检查无风险，继续查询请求时段是否冲突并获取同日备选时段。\"},\"reason\":\"按顺序在 check_rules 通过后查询时段。\"}",
+      "assistant_text": "{\"tool\":\"query_slots\",\"arguments\":{\"material_id\":\"M05\",\"reason\":\"M05 字段完整且规则检查无风险，查询 2026-11-12 21:00 及同日替代时段\"},\"reason\":\"按流程在规则检查通过后查询可用时段\"}",
       "tool_calls": [
         {
           "id": "call_3",
@@ -122,7 +122,7 @@
           "arguments": {
             "material_id": "M05"
           },
-          "reason": "按顺序在 check_rules 通过后查询时段。"
+          "reason": "按流程在规则检查通过后查询可用时段"
         }
       ],
       "index": 5
@@ -169,7 +169,7 @@
     {
       "type": "model_decision",
       "model_step": 4,
-      "assistant_text": "{\"tool\":\"save_draft\",\"arguments\":{\"material_id\":\"M05\",\"date\":\"2026-11-12\",\"start\":\"21:00\",\"confirmation_status\":\"confirmed\",\"decision_basis\":\"规则检查无风险，且请求时段 21:00 可用，符合 preferred 约束\",\"reason\":\"请求时段可用且无冲突，保存草稿\"},\"reason\":\"保存 M05 的排期草稿\"}",
+      "assistant_text": "{\"tool\":\"save_draft\",\"arguments\":{\"material_id\":\"M05\",\"date\":\"2026-11-12\",\"start\":\"21:00\",\"confirmation_status\":\"confirmed\",\"decision_basis\":\"preferred约束的请求时段可用，无冲突\",\"reason\":\"规则检查无风险且21:00时段可用，保存草稿\"},\"reason\":\"按时段可用结果保存M05排期草稿\"}",
       "tool_calls": [
         {
           "id": "call_4",
@@ -179,9 +179,9 @@
             "date": "2026-11-12",
             "start": "21:00",
             "confirmation_status": "confirmed",
-            "decision_basis": "规则检查无风险，且请求时段 21:00 可用，符合 preferred 约束"
+            "decision_basis": "preferred约束的请求时段可用，无冲突"
           },
-          "reason": "保存 M05 的排期草稿"
+          "reason": "按时段可用结果保存M05排期草稿"
         }
       ],
       "index": 7
@@ -196,7 +196,7 @@
         "date": "2026-11-12",
         "start": "21:00",
         "confirmation_status": "confirmed",
-        "decision_basis": "规则检查无风险，且请求时段 21:00 可用，符合 preferred 约束"
+        "decision_basis": "preferred约束的请求时段可用，无冲突"
       },
       "ok": false,
       "code": "INVALID_ARGUMENTS",
@@ -214,7 +214,7 @@
     {
       "type": "model_decision",
       "model_step": 5,
-      "assistant_text": "{\"tool\":\"save_draft\",\"arguments\":{\"material_id\":\"M05\",\"date\":\"2026-11-12\",\"start\":\"21:00\",\"confirmation_status\":\"not_required\",\"decision_basis\":\"规则检查无风险，请求时段 21:00 可用且无冲突，preferred 约束无需用户确认\",\"reason\":\"修正 confirmation_status 后重新保存草稿\"},\"reason\":\"save_draft 因 confirmation_status 非允许值失败，按错误改用 not_required 重试\"}",
+      "assistant_text": "{\"tool\":\"save_draft\",\"arguments\":{\"material_id\":\"M05\",\"date\":\"2026-11-12\",\"start\":\"21:00\",\"confirmation_status\":\"not_required\",\"decision_basis\":\"preferred约束的请求时段可用，无冲突\",\"reason\":\"修正 confirmation_status 后重新保存草稿\"},\"reason\":\"save_draft 报错要求 confirmation_status 为 not_required 或 pending_user_confirmation；请求时段无冲突，应使用 not_required。\"}",
       "tool_calls": [
         {
           "id": "call_5",
@@ -224,9 +224,9 @@
             "date": "2026-11-12",
             "start": "21:00",
             "confirmation_status": "not_required",
-            "decision_basis": "规则检查无风险，请求时段 21:00 可用且无冲突，preferred 约束无需用户确认"
+            "decision_basis": "preferred约束的请求时段可用，无冲突"
           },
-          "reason": "save_draft 因 confirmation_status 非允许值失败，按错误改用 not_required 重试"
+          "reason": "save_draft 报错要求 confirmation_status 为 not_required 或 pending_user_confirmation；请求时段无冲突，应使用 not_required。"
         }
       ],
       "index": 9
@@ -241,7 +241,7 @@
         "date": "2026-11-12",
         "start": "21:00",
         "confirmation_status": "not_required",
-        "decision_basis": "规则检查无风险，请求时段 21:00 可用且无冲突，preferred 约束无需用户确认"
+        "decision_basis": "preferred约束的请求时段可用，无冲突"
       },
       "ok": false,
       "code": "SAVE_FAILED",
@@ -259,15 +259,15 @@
     {
       "type": "model_decision",
       "model_step": 6,
-      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M05：规则检查无风险，请求时段 2026-11-12 21:00 可用，但 save_draft 失败（SAVE_FAILED，未写入任何草稿）；该素材终态为保存失败。\",\"reason\":\"所有素材均已有终态，M05 保存失败需如实结束。\"},\"reason\":\"所有素材均已有终态，M05 保存失败需如实结束。\"}",
+      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M05 草稿保存失败（SAVE_FAILED，未写入任何草稿），该素材已处理至终态 save_failed。\",\"reason\":\"所有素材已有终态，且保存失败必须如实报告，不能声称成功。\"},\"reason\":\"M05 已因草稿保存失败形成终态，现结束本次请求。\"}",
       "tool_calls": [
         {
           "id": "call_6",
           "name": "finish",
           "arguments": {
-            "summary": "M05：规则检查无风险，请求时段 2026-11-12 21:00 可用，但 save_draft 失败（SAVE_FAILED，未写入任何草稿）；该素材终态为保存失败。"
+            "summary": "M05 草稿保存失败（SAVE_FAILED，未写入任何草稿），该素材已处理至终态 save_failed。"
           },
-          "reason": "所有素材均已有终态，M05 保存失败需如实结束。"
+          "reason": "M05 已因草稿保存失败形成终态，现结束本次请求。"
         }
       ],
       "index": 11
@@ -278,11 +278,11 @@
       "tool_call_id": "call_6",
       "tool": "finish",
       "arguments": {
-        "summary": "M05：规则检查无风险，请求时段 2026-11-12 21:00 可用，但 save_draft 失败（SAVE_FAILED，未写入任何草稿）；该素材终态为保存失败。"
+        "summary": "M05 草稿保存失败（SAVE_FAILED，未写入任何草稿），该素材已处理至终态 save_failed。"
       },
       "ok": true,
       "code": "OK",
-      "summary": "M05：规则检查无风险，请求时段 2026-11-12 21:00 可用，但 save_draft 失败（SAVE_FAILED，未写入任何草稿）；该素材终态为保存失败。",
+      "summary": "M05 草稿保存失败（SAVE_FAILED，未写入任何草稿），该素材已处理至终态 save_failed。",
       "data": {
         "finished": true
       },

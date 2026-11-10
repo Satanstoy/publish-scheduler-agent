@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-DUP-8E2FBA03",
+  "run_id": "RUN-REQ-DUP-918E1EFE",
   "request_id": "REQ-DUP",
   "engine": "offline-mock",
   "model": "reference-policy",
@@ -29,6 +29,7 @@
     {
       "material_id": "M01",
       "title": "城市夜跑指南",
+      "status": "pending_confirmation",
       "review_status": "passed",
       "schedule_status": "pending_confirmation",
       "risks": [],

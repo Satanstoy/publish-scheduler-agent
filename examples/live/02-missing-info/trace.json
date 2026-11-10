@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-MISSING-35A3BCC4",
+  "run_id": "RUN-REQ-MISSING-F8D9A16A",
   "engine": "live-opencode-local",
   "model": "opencode-go/deepseek-v4.1-flash",
   "request": {
@@ -26,7 +26,7 @@
     {
       "type": "model_decision",
       "model_step": 1,
-      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M02\",\"reason\":\"读取M02素材元数据并检查字段完整性\"},\"reason\":\"按流程先获取素材信息\"}",
+      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M02\",\"reason\":\"开始处理素材前先读取元数据并检查字段完整性\"},\"reason\":\"规则要求按顺序先调用 get_material。\"}",
       "tool_calls": [
         {
           "id": "call_1",
@@ -34,7 +34,7 @@
           "arguments": {
             "material_id": "M02"
           },
-          "reason": "按流程先获取素材信息"
+          "reason": "规则要求按顺序先调用 get_material。"
         }
       ],
       "index": 1
@@ -78,15 +78,15 @@
     {
       "type": "model_decision",
       "model_step": 2,
-      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M02 缺少必填字段 duration_minutes 和 metadata.copyright_owner，未查询时段、未保存草稿，终态为字段不完整。\",\"reason\":\"所有素材均已处理并有终态，按规则结束任务。\"},\"reason\":\"M02 缺字段，已按规则终止该素材处理，现提交结束。\"}",
+      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M02 缺少 duration_minutes、metadata.copyright_owner；未查时段、未保存草稿，素材终态为缺字段。\",\"reason\":\"依据规则3，缺字段应结束该素材；所有素材已有终态，调用 finish。\"},\"reason\":\"M02 缺字段，不能再查时段或保存草稿，现结束并汇总。\"}",
       "tool_calls": [
         {
           "id": "call_2",
           "name": "finish",
           "arguments": {
-            "summary": "M02 缺少必填字段 duration_minutes 和 metadata.copyright_owner，未查询时段、未保存草稿，终态为字段不完整。"
+            "summary": "M02 缺少 duration_minutes、metadata.copyright_owner；未查时段、未保存草稿，素材终态为缺字段。"
           },
-          "reason": "M02 缺字段，已按规则终止该素材处理，现提交结束。"
+          "reason": "M02 缺字段，不能再查时段或保存草稿，现结束并汇总。"
         }
       ],
       "index": 3
@@ -97,7 +97,7 @@
       "tool_call_id": "call_2",
       "tool": "finish",
       "arguments": {
-        "summary": "M02 缺少必填字段 duration_minutes 和 metadata.copyright_owner，未查询时段、未保存草稿，终态为字段不完整。"
+        "summary": "M02 缺少 duration_minutes、metadata.copyright_owner；未查时段、未保存草稿，素材终态为缺字段。"
       },
       "ok": false,
       "code": "INCOMPLETE_COVERAGE",
@@ -119,7 +119,7 @@
     {
       "type": "model_decision",
       "model_step": 3,
-      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M02\",\"reason\":\"M02 已确认缺少 duration_minutes 与 metadata.copyright_owner，需先完成规则检查再结束该素材\"},\"reason\":\"已读取 M02 且字段不完整，按流程调用 check_rules 获取规则检查结果\"}",
+      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M02\",\"reason\":\"M02 缺少 duration_minutes 与 metadata.copyright_owner，需检查规则确认缺字段终态，且不查时段、不保存草稿。\"},\"reason\":\"按顺序在 get_material 后执行 check_rules；因已发现缺字段，后续不查时段、不保存草稿。\"}",
       "tool_calls": [
         {
           "id": "call_3",
@@ -127,7 +127,7 @@
           "arguments": {
             "material_id": "M02"
           },
-          "reason": "已读取 M02 且字段不完整，按流程调用 check_rules 获取规则检查结果"
+          "reason": "按顺序在 get_material 后执行 check_rules；因已发现缺字段，后续不查时段、不保存草稿。"
         }
       ],
       "index": 5
@@ -172,15 +172,15 @@
     {
       "type": "model_decision",
       "model_step": 4,
-      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M02 缺少必填字段 duration_minutes 和 metadata.copyright_owner，hard 阻断；未查询时段、未保存草稿，终态为字段不完整。\",\"reason\":\"M02 硬规则缺失必填字段，按规则跳过时段查询与草稿保存并结束该素材。\"},\"reason\":\"M02 已因缺字段形成阻断终态，现调用 finish 汇总。\"}",
+      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M02 缺少 duration_minutes、metadata.copyright_owner，属硬规则阻断；未查时段、未保存草稿，终态为缺字段。\",\"reason\":\"缺字段且硬规则违规，应结束该素材并提交完成状态。\"},\"reason\":\"所有素材已处理，调用 finish 结束任务。\"}",
       "tool_calls": [
         {
           "id": "call_4",
           "name": "finish",
           "arguments": {
-            "summary": "M02 缺少必填字段 duration_minutes 和 metadata.copyright_owner，hard 阻断；未查询时段、未保存草稿，终态为字段不完整。"
+            "summary": "M02 缺少 duration_minutes、metadata.copyright_owner，属硬规则阻断；未查时段、未保存草稿，终态为缺字段。"
           },
-          "reason": "M02 已因缺字段形成阻断终态，现调用 finish 汇总。"
+          "reason": "所有素材已处理，调用 finish 结束任务。"
         }
       ],
       "index": 7
@@ -191,11 +191,11 @@
       "tool_call_id": "call_4",
       "tool": "finish",
       "arguments": {
-        "summary": "M02 缺少必填字段 duration_minutes 和 metadata.copyright_owner，hard 阻断；未查询时段、未保存草稿，终态为字段不完整。"
+        "summary": "M02 缺少 duration_minutes、metadata.copyright_owner，属硬规则阻断；未查时段、未保存草稿，终态为缺字段。"
       },
       "ok": true,
       "code": "OK",
-      "summary": "M02 缺少必填字段 duration_minutes 和 metadata.copyright_owner，hard 阻断；未查询时段、未保存草稿，终态为字段不完整。",
+      "summary": "M02 缺少 duration_minutes、metadata.copyright_owner，属硬规则阻断；未查时段、未保存草稿，终态为缺字段。",
       "data": {
         "finished": true
       },

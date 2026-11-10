@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-FAIL-467470E4",
+  "run_id": "RUN-REQ-FAIL-12C799E4",
   "request_id": "REQ-FAIL",
   "engine": "live-opencode-local",
   "model": "opencode-go/deepseek-v4.1-flash",
@@ -29,6 +29,7 @@
     {
       "material_id": "M05",
       "title": "直播切片：秋季新品",
+      "status": "save_failed",
       "review_status": "passed",
       "schedule_status": "save_failed",
       "risks": [],

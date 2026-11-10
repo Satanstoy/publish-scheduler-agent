@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-HARD-E2DD8202",
+  "run_id": "RUN-REQ-HARD-5AFBDED4",
   "request_id": "REQ-HARD",
   "engine": "live-opencode-local",
   "model": "opencode-go/deepseek-v4.1-flash",
@@ -29,6 +29,7 @@
     {
       "material_id": "M04",
       "title": "双十一预热混剪",
+      "status": "blocked_conflict",
       "review_status": "passed",
       "schedule_status": "blocked_conflict",
       "risks": [],

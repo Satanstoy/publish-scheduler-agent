@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-WARN-71937594",
+  "run_id": "RUN-REQ-WARN-8BF18E35",
   "request_id": "REQ-WARN",
   "engine": "offline-mock",
   "model": "reference-policy",
@@ -29,6 +29,7 @@
     {
       "material_id": "M06",
       "title": "长视频：年度回顾",
+      "status": "pending_confirmation",
       "review_status": "warning",
       "schedule_status": "pending_confirmation",
       "risks": [

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-HARD-9E391EB9",
+  "run_id": "RUN-REQ-HARD-B8F40CA2",
   "request_id": "REQ-HARD",
   "engine": "offline-mock",
   "model": "reference-policy",
@@ -29,6 +29,7 @@
     {
       "material_id": "M04",
       "title": "双十一预热混剪",
+      "status": "blocked_conflict",
       "review_status": "passed",
       "schedule_status": "blocked_conflict",
       "risks": [],

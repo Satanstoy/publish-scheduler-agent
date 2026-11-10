@@ -15,6 +15,7 @@
 | `07-save-failure` | M05，21:00 可用，注入 `save_draft` 故障 | `save_failed` | 无草稿，错误码 `SAVE_FAILED` |
 | `08-soft-warning` | M06，时长 100 分钟 | `pending_confirmation` | 软警告 `LONG_DURATION_REVIEW`，草稿待确认 |
 | `09-confirm` | M01 待确认草稿执行 `confirm` | `user_confirmed` | 仍是 `status=draft`，`published=false` |
+| `10-step-limit` | M00，限制 1 个模型步 | `incomplete` | 只读取素材后停止，未保存草稿 |
 
 复现单条用例：
 
@@ -65,6 +66,10 @@ python3 run.py run \
 ```
 
 live 目录只保留输入、输出和 Trace，没有提交 `store.json`，因为现场重跑会重新生成草稿；草稿 ID 由请求指纹确定，因此同一个输入仍会得到同一个 ID。
+
+## 测试结果
+
+`examples/test-results.txt` 是 `python3 -m pytest -v -o addopts=''` 的实际输出，当前 **69 passed**。`docs/03-evaluation.md` 的测试引用指向该文件和对应测试名。
 
 ## 看 Trace 时重点核对
 

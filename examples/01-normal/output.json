@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-NORMAL-F69FA9A8",
+  "run_id": "RUN-REQ-NORMAL-ACF8E65C",
   "request_id": "REQ-NORMAL",
   "engine": "offline-mock",
   "model": "reference-policy",
@@ -29,6 +29,7 @@
     {
       "material_id": "M00",
       "title": "秋日通勤穿搭",
+      "status": "drafted",
       "review_status": "passed",
       "schedule_status": "drafted",
       "risks": [],

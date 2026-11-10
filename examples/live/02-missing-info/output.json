@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-MISSING-35A3BCC4",
+  "run_id": "RUN-REQ-MISSING-F8D9A16A",
   "request_id": "REQ-MISSING",
   "engine": "live-opencode-local",
   "model": "opencode-go/deepseek-v4.1-flash",
@@ -29,6 +29,7 @@
     {
       "material_id": "M02",
       "title": "未命名素材",
+      "status": "needs_input",
       "review_status": "needs_input",
       "schedule_status": "not_scheduled",
       "risks": [

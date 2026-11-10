@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "run_id": "RUN-REQ-LIMIT-62C92DE8",
+  "request_id": "REQ-LIMIT",
+  "engine": "offline-mock",
+  "model": "reference-policy",
+  "mode_note": "离线 Mock 仅验证流程与护栏，不代表真实模型决策效果。",
+  "status": "incomplete",
+  "outcome": "incomplete",
+  "stop_reason": "step_limit",
+  "published": false,
+  "limits": {
+    "max_steps": 1,
+    "max_tool_calls": 20,
+    "used_steps": 1,
+    "used_tool_calls": 1
+  },
+  "summary": {
+    "total": 1,
+    "drafted": 0,
+    "pending_confirmation": 0,
+    "blocked_rule": 0,
+    "blocked_conflict": 0,
+    "needs_input": 0,
+    "save_failed": 0,
+    "incomplete": 1
+  },
+  "items": [
+    {
+      "material_id": "M00",
+      "title": "秋日通勤穿搭",
+      "status": "incomplete",
+      "review_status": "unknown",
+      "schedule_status": "incomplete",
+      "risks": [],
+      "missing_fields": [],
+      "requested_slot": {
+        "date": "2026-11-12",
+        "start": "10:00",
+        "end": "11:00",
+        "constraint": "preferred",
+        "channel": "wechat",
+        "timezone": "Asia/Shanghai"
+      },
+      "suggested_slot": null,
+      "slot_conflict": null,
+      "confirmation_status": "not_applicable",
+      "pending_items": [
+        {
+          "code": "INCOMPLETE",
+          "message": "未在执行步数或工具调用上限内完成，未保存草稿。"
+        }
+      ],
+      "draft": {
+        "id": null,
+        "save_status": "not_attempted",
+        "deduplicated": false,
+        "status": "not_saved",
+        "published": false
+      },
+      "error": null,
+      "decision_basis": "在 1 步 / 20 次调用上限内未完成。",
+      "published": false
+    }
+  ],
+  "proposed_schedule": [],
+  "confirmation_required": []
+}

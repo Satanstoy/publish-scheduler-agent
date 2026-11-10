@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-NORMAL-DE9D7448",
+  "run_id": "RUN-REQ-NORMAL-83DEEF43",
   "request_id": "REQ-NORMAL",
   "engine": "live-opencode-local",
   "model": "opencode-go/deepseek-v4.1-flash",
@@ -12,8 +12,8 @@
   "limits": {
     "max_steps": 12,
     "max_tool_calls": 20,
-    "used_steps": 5,
-    "used_tool_calls": 5
+    "used_steps": 6,
+    "used_tool_calls": 6
   },
   "summary": {
     "total": 1,
@@ -29,6 +29,7 @@
     {
       "material_id": "M00",
       "title": "秋日通勤穿搭",
+      "status": "drafted",
       "review_status": "passed",
       "schedule_status": "drafted",
       "risks": [],

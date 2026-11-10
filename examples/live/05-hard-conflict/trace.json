@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-HARD-E2DD8202",
+  "run_id": "RUN-REQ-HARD-5AFBDED4",
   "engine": "live-opencode-local",
   "model": "opencode-go/deepseek-v4.1-flash",
   "request": {
@@ -26,7 +26,7 @@
     {
       "type": "model_decision",
       "model_step": 1,
-      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"读取 M04 元数据以校验字段和约束\"},\"reason\":\"按规则必须先读取素材元数据\"}",
+      "assistant_text": "{\"tool\":\"get_material\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"按规则先读取 M04 元数据并确认字段完整性\"},\"reason\":\"处理请求中的素材 M04，必须先调用 get_material。\"}",
       "tool_calls": [
         {
           "id": "call_1",
@@ -34,7 +34,7 @@
           "arguments": {
             "material_id": "M04"
           },
-          "reason": "按规则必须先读取素材元数据"
+          "reason": "处理请求中的素材 M04，必须先调用 get_material。"
         }
       ],
       "index": 1
@@ -77,7 +77,7 @@
     {
       "type": "model_decision",
       "model_step": 2,
-      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"已读取 M04 且字段完整，继续检查版权、禁词、黑名单日期、时长、工作时段和临期风险。\"},\"reason\":\"按顺序处理素材，get_material 完成后必须执行 check_rules。\"}",
+      "assistant_text": "{\"tool\":\"check_rules\",\"arguments\":{\"material_id\":\"M04\"},\"reason\":\"素材字段完整，需继续检查硬规则与合规约束。\"}",
       "tool_calls": [
         {
           "id": "call_2",
@@ -85,7 +85,7 @@
           "arguments": {
             "material_id": "M04"
           },
-          "reason": "按顺序处理素材，get_material 完成后必须执行 check_rules。"
+          "reason": "素材字段完整，需继续检查硬规则与合规约束。"
         }
       ],
       "index": 3
@@ -114,7 +114,7 @@
     {
       "type": "model_decision",
       "model_step": 3,
-      "assistant_text": "{\"tool\":\"query_slots\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"规则检查无风险，查询请求时段 2026-11-14 18:00 是否冲突并获取同日替代时段\"},\"reason\":\"按流程在保存草稿前查询时段冲突\"}",
+      "assistant_text": "{\"tool\":\"query_slots\",\"arguments\":{\"material_id\":\"M04\",\"reason\":\"规则检查无风险，查询请求时段是否冲突\"},\"reason\":\"按流程在规则检查后查询时段\"}",
       "tool_calls": [
         {
           "id": "call_3",
@@ -122,7 +122,7 @@
           "arguments": {
             "material_id": "M04"
           },
-          "reason": "按流程在保存草稿前查询时段冲突"
+          "reason": "按流程在规则检查后查询时段"
         }
       ],
       "index": 5
@@ -210,15 +210,15 @@
     {
       "type": "model_decision",
       "model_step": 4,
-      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。\",\"reason\":\"M04 已完成 get_material、check_rules、query_slots，硬约束冲突不得保存替代时段，且该素材已有终态。\"},\"reason\":\"所有素材均有终态后调用 finish。\"}",
+      "assistant_text": "{\"tool\":\"finish\",\"arguments\":{\"summary\":\"M04 已完成审核；硬约束冲突，请求时段 2026-11-14 18:00-19:00 与 M91 冲突，按规则不保存替代时段草稿，仅报告备选时段 19:00、19:30、20:00、20:30、21:00。\",\"reason\":\"M04 已处于终态 blocked_conflict，且所有素材均已处理。\"},\"reason\":\"所有素材已有终态，调用 finish 结束请求。\"}",
       "tool_calls": [
         {
           "id": "call_4",
           "name": "finish",
           "arguments": {
-            "summary": "M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。"
+            "summary": "M04 已完成审核；硬约束冲突，请求时段 2026-11-14 18:00-19:00 与 M91 冲突，按规则不保存替代时段草稿，仅报告备选时段 19:00、19:30、20:00、20:30、21:00。"
           },
-          "reason": "所有素材均有终态后调用 finish。"
+          "reason": "所有素材已有终态，调用 finish 结束请求。"
         }
       ],
       "index": 7
@@ -229,11 +229,11 @@
       "tool_call_id": "call_4",
       "tool": "finish",
       "arguments": {
-        "summary": "M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。"
+        "summary": "M04 已完成审核；硬约束冲突，请求时段 2026-11-14 18:00-19:00 与 M91 冲突，按规则不保存替代时段草稿，仅报告备选时段 19:00、19:30、20:00、20:30、21:00。"
       },
       "ok": true,
       "code": "OK",
-      "summary": "M04 终态 blocked_conflict：hard 约束下请求 2026-11-14 18:00-19:00 与 M91 冲突，不保存替代时段；备选为 19:00、19:30、20:00、20:30、21:00。",
+      "summary": "M04 已完成审核；硬约束冲突，请求时段 2026-11-14 18:00-19:00 与 M91 冲突，按规则不保存替代时段草稿，仅报告备选时段 19:00、19:30、20:00、20:30、21:00。",
       "data": {
         "finished": true
       },

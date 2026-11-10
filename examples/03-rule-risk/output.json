@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "run_id": "RUN-REQ-RULE-A9ED5D1A",
+  "run_id": "RUN-REQ-RULE-D39C4A74",
   "request_id": "REQ-RULE",
   "engine": "offline-mock",
   "model": "reference-policy",
@@ -29,6 +29,7 @@
     {
       "material_id": "M03",
       "title": "高收益副业揭秘",
+      "status": "blocked_rule",
       "review_status": "blocked",
       "schedule_status": "not_scheduled",
       "risks": [

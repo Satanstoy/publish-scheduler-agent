@@ -69,6 +69,11 @@ CASES = {
         "expect": "user_confirmed",
         "confirm": True,
     },
+    "10-step-limit": {
+        "request": request("REQ-LIMIT", "M00", "2026-11-12", "10:00"),
+        "expect": "incomplete",
+        "max_steps": 1,
+    },
 }
 
 
@@ -107,6 +112,8 @@ def base_command(case: str, input_path: Path, state: Path, output: Path, trace: 
     ]
     if CASES[case].get("fault"):
         command.extend(["--fault", "save_draft"])
+    if CASES[case].get("max_steps") is not None:
+        command.extend(["--max-steps", str(CASES[case]["max_steps"])])
     return command
 
 

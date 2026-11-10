@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "publish-scheduler-agent"
+version = "0.1.0"
+description = "Material review and publishing schedule agent (campus assessment)"
+requires-python = ">=3.12"
+dependencies = [
+  "openai>=1.40,<2",
+  "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+publish-agent = "publish_agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "live: calls a real model endpoint; skipped unless explicitly enabled",
+]

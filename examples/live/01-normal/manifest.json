@@ -1,0 +1,13 @@
+{
+  "case": "01-normal",
+  "engine": "live-opencode-local",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "real_model_call": true,
+  "protocol": "json-text via local OpenCode generate/text",
+  "input": "input.json",
+  "output": "output.json",
+  "trace": "trace.json",
+  "store": "store.json",
+  "command": "OPENCODE_CLI_PATH=\"/path/to/opencode-cli\" python3 run.py run --request examples/live/01-normal/input.json --data-dir data --state-dir .runs/live-01-normal --engine opencode-local --now 2026-11-10T09:00:00+08:00 --output examples/live/01-normal/output.json --trace examples/live/01-normal/trace.json",
+  "note": "真实模型调用；直连 opencode-go key 已过期，使用本机 OpenCode 服务。该接口是实验性的，换机器不一定可复现。"
+}

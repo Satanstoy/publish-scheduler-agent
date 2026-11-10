@@ -148,7 +148,7 @@ export OPENCODE_CLI_PATH="/path/to/opencode-cli"
 python3 run.py run ... --engine opencode-local
 ```
 
-通过本机 OpenCode 服务的 `POST /api/experimental/generate/text` 走文本 JSON 决策协议。仓库不包含任何凭证；`examples/live/` 下的真实模型 Trace 由该模式生成，模型为 `opencode-go/deepseek-v4.1-flash`。该接口是实验性接口，评审环境不一定可用。
+通过本机 OpenCode 服务的 `POST /api/experimental/generate/text` 走文本 JSON 决策协议。仓库不包含任何凭证；`examples/live/` 下的真实模型 Trace 由该模式生成，模型为 `opencode-go/deepseek-v4.1-flash`。每个 live 用例目录含 `manifest.json`（实际命令/模型）、`input.json`、`trace.json`（模型决策/工具调用）、`output.json` 和 `store.json`。该接口是实验性接口，评审环境不一定可用。
 
 三种引擎共用同一套工具、ledger、报告和 Trace 格式。离线 mock 证明流程和护栏；live 证明模型能根据工具结果调整动作。
 

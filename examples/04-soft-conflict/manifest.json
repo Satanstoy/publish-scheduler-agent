@@ -4,6 +4,6 @@
   "output": "output.json",
   "trace": "trace.json",
   "store": "store.json",
-  "command": "/opt/anaconda3/bin/python3 -m publish_agent run --request examples/04-soft-conflict/input.json --data-dir /Users/shijie/Documents/Default Project/publish-scheduler-agent/data --state-dir .runs/04-soft-conflict --engine offline --now 2026-11-10T09:00:00+08:00 --output output.json --trace trace.json",
+  "command": "python3 run.py run --request examples/04-soft-conflict/input.json --data-dir data --state-dir .runs/04-soft-conflict --engine offline --now 2026-11-10T09:00:00+08:00 --output examples/04-soft-conflict/output.json --trace examples/04-soft-conflict/trace.json",
   "expected": "pending_confirmation"
 }

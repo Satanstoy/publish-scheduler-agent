@@ -31,7 +31,7 @@ $ python3 -m pytest -q
 ..................................................................       [100%]
 ```
 
-当前收集到 **69 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
+当前收集到 **72 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
 
 ## 3. 验收场景与结果
 
@@ -144,6 +144,8 @@ Trace 只有一条 `get_material` 工具结果，`next_action=end`，没有 `sav
 | 软冲突 | `examples/live/04-soft-conflict/trace.json` | 18:00 冲突，选择 19:00，保存 pending |
 | 硬冲突 | `examples/live/05-hard-conflict/trace.json` | 硬约束冲突，只给备选，不保存 |
 | 保存失败 | `examples/live/07-save-failure/trace.json` | 参数错误被拒后修正；保存失败后如实结束 |
+
+每个 live 目录还包含对应的 `input.json`、`output.json`、`store.json` 和 `manifest.json`；`manifest.json` 记录实际命令、engine、model 和 `real_model_call=true`。
 
 ### 4.1 提前 finish 被拒绝后调整
 

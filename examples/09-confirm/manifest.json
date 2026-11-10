@@ -1,0 +1,12 @@
+{
+  "case": "09-confirm",
+  "input": "input.json",
+  "output": "output.json",
+  "trace": "trace.json",
+  "store_before_confirm": "store-before-confirm.json",
+  "store_after_confirm": "store-after-confirm.json",
+  "confirm": "confirm.json",
+  "run_command": "python3 run.py run --request examples/09-confirm/input.json --data-dir data --state-dir .runs/09-confirm --engine offline --now 2026-11-10T09:00:00+08:00 --output examples/09-confirm/output.json --trace examples/09-confirm/trace.json",
+  "confirm_command": "python3 run.py confirm --state-dir .runs/09-confirm --data-dir data --draft-id DRF-F5AC5C49C1 --now 2026-11-10T09:00:00+08:00",
+  "expected": "pending_confirmation -> user_confirmed"
+}

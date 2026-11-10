@@ -65,11 +65,23 @@ python3 run.py run \
   --trace /tmp/live-trace.json
 ```
 
-live 目录只保留输入、输出和 Trace，没有提交 `store.json`，因为现场重跑会重新生成草稿；草稿 ID 由请求指纹确定，因此同一个输入仍会得到同一个 ID。
+live 目录包含 `input.json`、`output.json`、`trace.json`、`store.json` 和 `manifest.json`。`manifest.json` 记录实际使用的 engine、model、完整命令和 `real_model_call=true`；`store.json` 用来核对软冲突是否只有一份草稿、硬冲突/缺资料/保存失败是否没有草稿。草稿 ID 由请求指纹确定，因此同一个输入重跑仍会得到同一个 ID。
 
 ## 测试结果
 
-`examples/test-results.txt` 是 `python3 -m pytest -v -o addopts=''` 的实际输出，当前 **69 passed**。`docs/03-evaluation.md` 的测试引用指向该文件和对应测试名。
+`examples/test-results.txt` 是 `python3 -m pytest -v -o addopts=''` 的实际输出，当前 **72 passed**。`docs/03-evaluation.md` 的测试引用指向该文件和对应测试名。
+
+## Live 调用记录
+
+一条 live 运行的完整记录由 5 个文件组成：
+
+- `manifest.json`：实际 engine、model、完整命令、`real_model_call=true`。
+- `input.json`：用户请求。
+- `trace.json`：整个运行的模型决策与工具调用记录，含 `request`、`steps`、`outcome`、`limits`。
+- `output.json`：逐项业务结果。
+- `store.json`：运行后的草稿状态。
+
+`trace.json` 的 `steps` 中，`model_decision.assistant_text` 是模型这次实际输出的原始 JSON，`tool_calls[].arguments` 是模型选择的工具参数，`tool_result.summary` 是工具返回摘要，`next_action` 是下一次动作。`examples/live/02-missing-info` 和 `examples/live/07-save-failure` 分别记录了“提前 finish 被拒后补查”和“参数错误修正后保存失败”的真实模型调整。
 
 ## 看 Trace 时重点核对
 

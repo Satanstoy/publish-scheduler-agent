@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "drafts": {
+    "DRF-F5AC5C49C1": {
+      "id": "DRF-F5AC5C49C1",
+      "request_key": "RQ-1CAACCF9D48235AF",
+      "material_id": "M01",
+      "content_version": "v2",
+      "channel": "wechat",
+      "slot": {
+        "date": "2026-11-12",
+        "start": "19:00",
+        "end": "20:00",
+        "timezone": "Asia/Shanghai"
+      },
+      "requested_slot": {
+        "date": "2026-11-12",
+        "start": "18:00",
+        "end": "19:00",
+        "constraint": "preferred",
+        "timezone": "Asia/Shanghai"
+      },
+      "status": "draft",
+      "confirmation_status": "pending_user_confirmation",
+      "risks": [],
+      "pending_items": [
+        {
+          "code": "ALTERNATIVE_SLOT",
+          "message": "建议 19:00 替代原定 18:00，需用户确认。"
+        }
+      ],
+      "decision_basis": "preferred 约束冲突，按 query_slots 返回的最近替代时段 19:00 保存草稿，等待用户确认",
+      "created_at": "2026-11-10T09:00:00+08:00",
+      "published": false
+    }
+  },
+  "index": {
+    "RQ-1CAACCF9D48235AF": "DRF-F5AC5C49C1"
+  }
+}

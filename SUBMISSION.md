@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | README 环境、安装、运行、评审入口 | `README.md` | 已具备 |
 | `src/` 代码与模型/工具接入 | `src/publish_agent/` | 已具备 |
-| `tests/` 可执行测试 | `tests/`，69 个测试 | 已具备 |
+| `tests/` 可执行测试 | `tests/`，72 个测试 | 已具备 |
 | `examples/` 输入、输出、Trace | 10 组离线 + 6 组 live，`examples/README.md` | 已具备 |
 | `data/` 合成资料和规则 | `data/materials.json`、`schedule.json`、`rules.json` | 已具备 |
 | `docs/01`–`05` | `docs/01`–`05`，另加 `00`、`06` | 已具备 |

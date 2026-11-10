@@ -4,7 +4,6 @@ import json
 import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -91,14 +90,13 @@ def run(command: list[str], check: bool = False) -> subprocess.CompletedProcess:
 
 def base_command(case: str, input_path: Path, state: Path, output: Path, trace: Path, engine: str):
     command = [
-        sys.executable,
-        "-m",
-        "publish_agent",
+        "python3",
+        "run.py",
         "run",
         "--request",
         str(input_path),
         "--data-dir",
-        str(ROOT / "data"),
+        "data",
         "--state-dir",
         str(state),
         "--engine",
@@ -148,20 +146,20 @@ def main() -> int:
             first = run(
                 base_command(
                     case,
-                    input_path,
-                    state,
-                    case_dir / "output-run1.json",
-                    case_dir / "trace-run1.json",
+                    input_path.relative_to(ROOT),
+                    state.relative_to(ROOT),
+                    (case_dir / "output-run1.json").relative_to(ROOT),
+                    (case_dir / "trace-run1.json").relative_to(ROOT),
                     "offline",
                 )
             )
             second = run(
                 base_command(
                     case,
-                    input_path,
-                    state,
-                    case_dir / "output-run2.json",
-                    case_dir / "trace-run2.json",
+                    input_path.relative_to(ROOT),
+                    state.relative_to(ROOT),
+                    (case_dir / "output-run2.json").relative_to(ROOT),
+                    (case_dir / "trace-run2.json").relative_to(ROOT),
                     "offline",
                 )
             )
@@ -172,10 +170,10 @@ def main() -> int:
             completed = run(
                 base_command(
                     case,
-                    input_path,
-                    state,
-                    case_dir / "output.json",
-                    case_dir / "trace.json",
+                    input_path.relative_to(ROOT),
+                    state.relative_to(ROOT),
+                    (case_dir / "output.json").relative_to(ROOT),
+                    (case_dir / "trace.json").relative_to(ROOT),
                     "offline",
                 )
             )
@@ -188,9 +186,8 @@ def main() -> int:
                 snapshot_store(state, case_dir / "store-before-confirm.json")
                 confirmed = run(
                     [
-                        sys.executable,
-                        "-m",
-                        "publish_agent",
+                        "python3",
+                        "run.py",
                         "confirm",
                         "--state-dir",
                         str(state),
@@ -205,6 +202,36 @@ def main() -> int:
                 )
                 (case_dir / "confirm.json").write_text(confirmed.stdout, encoding="utf-8")
                 snapshot_store(state, case_dir / "store-after-confirm.json")
+                run_command = " ".join(
+                    base_command(
+                        case,
+                        input_path.relative_to(ROOT),
+                        state.relative_to(ROOT),
+                        (case_dir / "output.json").relative_to(ROOT),
+                        (case_dir / "trace.json").relative_to(ROOT),
+                        "offline",
+                    )
+                )
+                manifest = {
+                    "case": case,
+                    "input": "input.json",
+                    "output": "output.json",
+                    "trace": "trace.json",
+                    "store_before_confirm": "store-before-confirm.json",
+                    "store_after_confirm": "store-after-confirm.json",
+                    "confirm": "confirm.json",
+                    "run_command": run_command,
+                    "confirm_command": (
+                        "python3 run.py confirm --state-dir "
+                        f"{state.relative_to(ROOT)} --data-dir data "
+                        f"--draft-id {draft_id} --now {NOW}"
+                    ),
+                    "expected": "pending_confirmation -> user_confirmed",
+                }
+                (case_dir / "manifest.json").write_text(
+                    json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8",
+                )
                 continue
 
         snapshot_store(state, case_dir / "store.json")
@@ -219,8 +246,8 @@ def main() -> int:
                     case,
                     input_path.relative_to(ROOT),
                     state.relative_to(ROOT),
-                    Path(output_file),
-                    Path(trace_file),
+                    (case_dir / output_file).relative_to(ROOT),
+                    (case_dir / trace_file).relative_to(ROOT),
                     "offline",
                 )
             ),

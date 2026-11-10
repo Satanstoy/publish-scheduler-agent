@@ -316,6 +316,20 @@ save_draft -> SAVE_FAILED
 7. **确认不等于发布。** `confirm` 只改 `confirmation_status`，`status` 仍是 `draft`，`published=false`。
 8. **工具结果结构化。** 所有错误有稳定错误码，模型可以据此调整，测试可以断言。
 
+## 7.1 安全边界与 sandbox
+
+本题没有要求 OS/容器级 sandbox。当前实现也不是 sandbox：Agent、工具和存储都在同一个 Python 进程里，`opencode-local` 通过 subprocess 调本机 CLI。
+
+应用层的能力边界：
+
+- 工具白名单只有 `get_material`、`check_rules`、`query_slots`、`save_draft`、`finish`；没有 shell、网络、任意文件读写或 publish 工具。
+- 工具只能读取 `data/` 下的素材、排期、规则，只能写 `--state-dir/drafts.json`；写入使用线程锁、`fcntl` 文件锁和原子替换。
+- 参数校验、前置条件、硬约束、时段冲突、幂等都在 `ToolRegistry` 和 `Store` 里，模型不能绕过。
+- 报告由 ledger 生成，模型不能用自由文本声明保存成功。
+- 步数/工具调用上限由 runner 强制执行。
+
+如果要把不可信代码放进这个项目运行，建议外层用容器/VM：`data/` 只读挂载，`state/` 单独可写，禁网，限制 CPU/内存。当前项目不提供这层隔离，也不把应用层护栏当成安全 sandbox。
+
 ## 8. 幂等与自冲突
 
 重复运行最容易出的 bug 是：第一次生成的 19:00 草稿在第二次查询时占用了 19:00，Agent 误判冲突，生成 20:00 的第二份草稿。

@@ -89,6 +89,7 @@
   "model": "reference-policy",
   "mode_note": "离线 Mock 仅验证流程与护栏，不代表真实模型决策效果。",
   "status": "completed",
+  "outcome": "scheduled",
   "stop_reason": "finished",
   "published": false,
   "limits": {
@@ -167,6 +168,16 @@
 - `blocked`：硬规则或硬冲突导致不能确认。
 - `not_applicable`：没有草稿可确认。
 
+### 6.5 运行结果 `outcome`
+
+- `scheduled`：所有素材都已生成无需确认的草稿。
+- `needs_confirmation`：至少有一份草稿等待用户确认，但没有阻断或保存失败。
+- `needs_attention`：存在硬规则阻断、硬冲突、缺资料或保存失败。
+- `incomplete`：达到执行上限，仍有素材未完成。
+- `failed`：模型调用失败，运行未完成。
+
+`status` 表示 Agent 是否跑完，`outcome` 表示业务结果是否需要人工处理。保存失败时 `status` 可以是 `completed`（循环正常结束），但 `outcome` 必须是 `needs_attention`，且对应素材 `schedule_status=save_failed`。
+
 ## 7. 业务规则
 
 ### 7.1 必填字段
@@ -190,7 +201,7 @@
 
 - 冲突判断基于同一渠道的已有排期和已保存草稿。
 - 已保存草稿会占用规划时段；同一请求指纹的草稿在查询时排除，避免重复运行把自己判成冲突。
-- 替代时段只在同一天工作时段内搜索，步长 30 分钟，按“距请求时间最近、优先向后”排序。
+- 替代时段只在同一天工作时段内搜索，步长 30 分钟，按“优先向后，再按距离最近”排序。
 - 硬约束冲突：不保存草稿，返回 `blocked_conflict`，`suggested_slot` 给第一个备选。
 - 软约束冲突：保存替代时段草稿，`confirmation_status=pending_user_confirmation`。
 - 无任何可用替代：返回 `blocked_conflict`，`suggested_slot=null`。

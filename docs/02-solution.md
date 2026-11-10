@@ -355,6 +355,7 @@ save_draft -> SAVE_FAILED
 
 - `review_status`：从规则结果和缺失字段推导。
 - `schedule_status`：从草稿/冲突/保存失败推导。
+- `outcome`：`scheduled` / `needs_confirmation` / `needs_attention` / `incomplete` / `failed`，用于区分“Agent 跑完”和“业务上是否需要处理”。
 - `suggested_slot`：从时段查询的备选或已保存草稿推导。
 - `confirmation_status`：从草稿或阻断原因推导。
 - `decision_basis`：用工具证据生成固定句式，不复述模型思维过程。

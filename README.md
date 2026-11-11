@@ -304,7 +304,7 @@ python3 -m pytest -v -o addopts="" > examples/test-results.txt
 ## 提交信息
 
 - 题号：项目题 1「素材审核与发布排期 Agent」
-- GitHub URL：待填写
-- 最终 commit SHA：待填写（以 `git rev-parse HEAD` 为准）
+- GitHub URL：https://github.com/Satanstoy/publish-scheduler-agent
+- 最终 commit SHA：以该仓库最新一次 commit 的 `git rev-parse HEAD` 为准
 
 提交前请确认 `.env`、`.runs/`、任何真实 key 和隐私数据都未提交。

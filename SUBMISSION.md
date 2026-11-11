@@ -1,8 +1,8 @@
 # Submission
 
 - 题号：项目题 1「素材审核与发布排期 Agent」
-- GitHub URL：`待填写`
-- 最终 commit SHA：`待填写`
+- GitHub URL：https://github.com/Satanstoy/publish-scheduler-agent
+- 最终 commit SHA：以该仓库最新一次 commit 的 `git rev-parse HEAD` 为准
 
 ## 交付规范对照
 

@@ -1,0 +1,16 @@
+{
+  "case": "15-chat-natural",
+  "mode": "interactive bash natural language with real LLM",
+  "engine": "live-opencode-local",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "real_model_call": true,
+  "input": "input.txt",
+  "transcript": "transcript.txt",
+  "intent": "intent.json",
+  "output": "output.json",
+  "trace": "trace.json",
+  "store": "store.json",
+  "command": "OPENCODE_CLI_PATH=\"/path/to/opencode-cli\" python3 run.py chat --data-dir data --state-dir .runs/chat-nl-live --engine opencode-local",
+  "expected": "自然语言解析为 M00 + 今天 19:00；真实模型执行工具链并保存草稿；published=false",
+  "note": "直连 ocgo key 已过期；本记录使用本机 OpenCode 的已登录 generate/text。"
+}

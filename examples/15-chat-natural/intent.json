@@ -1,0 +1,8 @@
+{
+  "intent": "schedule",
+  "material_id": "M00",
+  "date": "2026-11-11",
+  "time": "19:00",
+  "constraint": "preferred",
+  "reason": "请求解析：素材标题/ID + 相对日期 + 时间"
+}

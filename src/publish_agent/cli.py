@@ -5,6 +5,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from uuid import uuid4
 
 from . import __version__
 from .chat import ChatSession, run_chat
@@ -49,6 +50,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     run.add_argument("--output", default=None, help="输出 JSON 路径")
     run.add_argument("--trace", default=None, help="Trace JSON 路径")
+    run.add_argument("--base-url", default=None, help="OpenAI-compatible base URL")
+    run.add_argument("--model", default=None, help="模型 ID")
+    run.add_argument("--api-key", default=None, help="建议用 OPENAI_API_KEY，避免 shell history")
     run.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS)
     run.add_argument("--max-tool-calls", type=int, default=DEFAULT_MAX_TOOL_CALLS)
     run.add_argument("--now", default=None, help="固定当前时间，ISO 8601")
@@ -91,6 +95,9 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
     )
     chat.add_argument("--now", default=None)
+    chat.add_argument("--base-url", default=None, help="OpenAI-compatible base URL")
+    chat.add_argument("--model", default=None, help="模型 ID")
+    chat.add_argument("--api-key", default=None, help="建议用 OPENAI_API_KEY，避免 shell history")
     chat.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS)
     chat.add_argument("--max-tool-calls", type=int, default=DEFAULT_MAX_TOOL_CALLS)
     chat.add_argument(
@@ -112,16 +119,27 @@ def _engine(args, request: PublishRequest, store: JsonStore):
     if selected == "offline":
         return OfflineEngine()
     if selected == "live":
-        api_key = os.getenv("OPENAI_API_KEY")
-        model = os.getenv("OPENAI_MODEL")
+        api_key = getattr(args, "api_key", None) or os.getenv("OPENAI_API_KEY")
+        model = getattr(args, "model", None) or os.getenv("OPENAI_MODEL")
+        base_url = getattr(args, "base_url", None) or os.getenv(
+            "OPENAI_BASE_URL", "https://api.openai.com/v1"
+        )
         if not api_key or not model:
             raise ConfigError(
-                "live 模式需要 OPENAI_API_KEY 和 OPENAI_MODEL；无 key 请用 --engine offline。"
+                "live 模式需要 base_url + api_key + model；"
+                "请设置 OPENAI_BASE_URL / OPENAI_API_KEY / OPENAI_MODEL，"
+                "或使用 --base-url/--api-key/--model。"
             )
+        headers = (
+            {"x-opencode-session": f"ses_{uuid4()}"}
+            if "opencode.ai" in base_url
+            else None
+        )
         return OpenAIEngine(
             api_key=api_key,
-            base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+            base_url=base_url,
             model=model,
+            default_headers=headers,
         )
     if selected == "opencode-local":
         cli_path = args.opencode_cli or default_opencode_cli_path()
@@ -213,13 +231,18 @@ def _chat(args) -> int:
     store = JsonStore(args.data_dir, args.state_dir, faults=faults)
     now = parse_now(args.now)
     if args.engine in {None, "auto"} and not os.getenv("AGENT_ENGINE"):
-        selected = default_chat_engine()
-        if selected is None:
-            raise ConfigError(
-                "chat 默认要求真实模型：设置 OPENCODE_CLI_PATH 或 OPENAI_API_KEY/OPENAI_MODEL；"
-                "只验证流程请显式使用 --engine offline。"
-            )
-        args.engine = selected
+        has_key = bool(args.api_key or os.getenv("OPENAI_API_KEY"))
+        has_model = bool(args.model or os.getenv("OPENAI_MODEL"))
+        if has_key and has_model:
+            args.engine = "live"
+        else:
+            selected = default_chat_engine()
+            if selected is None:
+                raise ConfigError(
+                    "chat 默认要求真实模型：设置 OPENAI_BASE_URL/OPENAI_API_KEY/OPENAI_MODEL，"
+                    "或 OPENCODE_CLI_PATH；只验证流程请显式使用 --engine offline。"
+                )
+            args.engine = selected
 
     def engine_factory(request: PublishRequest, session_store: JsonStore):
         return _engine(args, request, session_store)

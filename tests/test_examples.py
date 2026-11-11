@@ -118,6 +118,27 @@ def test_offline_examples_have_input_output_trace_store_manifest():
     assert _read(live_chat / "output.json")["published"] is False
     _assert_trace_complete(_read(live_chat / "trace.json"))
 
+    natural = EXAMPLES / "15-chat-natural"
+    for name in [
+        "input.txt",
+        "transcript.txt",
+        "intent.json",
+        "output.json",
+        "trace.json",
+        "store.json",
+        "manifest.json",
+    ]:
+        assert (natural / name).exists(), f"15-chat-natural missing {name}"
+    natural_intent = _read(natural / "intent.json")
+    assert natural_intent["intent"] == "schedule"
+    assert natural_intent["material_id"] == "M00"
+    assert natural_intent["time"] == "19:00"
+    natural_transcript = (natural / "transcript.txt").read_text(encoding="utf-8")
+    assert "[意图] M00" in natural_transcript
+    assert "engine=live-opencode-local" in natural_transcript
+    assert "published=false" in natural_transcript
+    _assert_trace_complete(_read(natural / "trace.json"))
+
 
 def test_live_examples_are_real_model_runs_with_complete_artifacts():
     for case in LIVE_CASES:

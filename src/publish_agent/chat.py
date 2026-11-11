@@ -1,51 +1,29 @@
 from __future__ import annotations
 
 import json
-import re
 from datetime import datetime
 from typing import Any, Callable
 
 from .config import write_json
+from .context import ChatContext
+from .intent import parse_request
 from .ledger import Ledger
 from .models import PublishRequest
-from .resolver import resolve_confirmation
+from .resolver import classify_message, resolve_confirmation
 from .runner import AgentRunner, Limits
 from .store import JsonStore
 from .tools import ToolRegistry
 
-DEFAULT_DATE = "2026-11-12"
-REQUEST_RE = re.compile(
-    r"^(?:排|安排|新建|run)?\s*(M\d+)\s*"
-    r"(?:(\d{4}-\d{2}-\d{2})\s*)?"
-    r"(\d{2}:\d{2})"
-    r"(?:\s*(hard|preferred|硬性|偏好))?\s*$",
-    re.IGNORECASE,
-)
-
-HELP_TEXT = """命令：
-  排 M01 2026-11-12 18:00          # 默认 preferred
-  排 M04 2026-11-14 18:00 hard     # 硬性约束
-  排 M01 18:00                     # 日期省略时默认 2026-11-12
+HELP_TEXT = """直接说人话即可：
+  给我安排一下秋日通勤穿搭今天晚上 7 点的排期
+  把 M04 排在 2026-11-14 18:00，硬性时间
+  M00 明天下午 3 点
   可以 / 没问题 / 继续 / 确认       # 确认唯一 pending 草稿
   取消                             # 不确认
   状态                             # 查看全部草稿
   退出
 
-说明：确认层是确定性的；多份 pending 时不会用一句“可以”全部确认。"""
-
-
-def parse_request_line(line: str) -> dict[str, Any] | None:
-    match = REQUEST_RE.match(line.strip())
-    if not match:
-        return None
-    material_id, date, clock, constraint = match.groups()
-    normalized_constraint = "hard" if constraint in {"hard", "硬性"} else "preferred"
-    return {
-        "material_id": material_id.upper(),
-        "date": date or DEFAULT_DATE,
-        "time": clock,
-        "constraint": normalized_constraint,
-    }
+说明：排期决策由模型完成；确认层是确定性的，多份 pending 时不会用一句“可以”全部确认。"""
 
 
 class ChatSession:
@@ -66,11 +44,23 @@ class ChatSession:
         self.counter = 0
         self.last_output: dict[str, Any] | None = None
         self.last_trace: dict[str, Any] | None = None
+        self.last_intent: dict[str, Any] | None = None
+        self.context = ChatContext(
+            materials=store.materials,
+            now=now,
+            pending=store.pending_drafts(),
+        )
 
     def handle(self, line: str) -> tuple[str, bool]:
         text = line.strip()
         if not text:
             return "", False
+        self.context.add_user(text)
+        reply, should_exit = self._handle(text)
+        self.context.add_assistant(reply)
+        return reply, should_exit
+
+    def _handle(self, text: str) -> tuple[str, bool]:
         lowered = text.lower()
         if lowered in {"退出", "quit", "exit", "q"}:
             return "会话结束。草稿仍然只保存在本地，未发布。", True
@@ -79,22 +69,39 @@ class ChatSession:
         if lowered in {"状态", "草稿", "status", "list"}:
             return self._format_state(), False
 
-        parsed = parse_request_line(text)
-        if parsed is not None:
-            return self._run(parsed), False
-
         pending = self.store.pending_drafts()
-        if not pending:
+        parsed = parse_request(text, self.context)
+        if parsed.get("intent") == "schedule":
+            return self._run(parsed), False
+        if parsed.get("intent") == "status":
+            return self._format_state(), False
+        if parsed.get("intent") == "help":
+            return HELP_TEXT, False
+
+        message_intent = classify_message(text)
+        if pending and message_intent != "unknown":
+            result = resolve_confirmation(text, self.store, now=self.now)
+            self.context.refresh(self.store)
+            return self._format_confirmation(result), False
+        if not pending and message_intent in {"affirm", "decline"}:
             return (
-                "当前没有待确认草稿。输入 `排 M01 2026-11-12 18:00` 创建请求，"
-                "或输入 `帮助` 查看命令。",
+                "当前没有待确认草稿。直接说排期请求即可，例如："
+                "给我安排秋日通勤穿搭今天晚上 7 点的排期。",
                 False,
             )
-        result = resolve_confirmation(text, self.store, now=self.now)
-        return self._format_confirmation(result), False
+        if pending:
+            result = resolve_confirmation(text, self.store, now=self.now)
+            self.context.refresh(self.store)
+            return self._format_confirmation(result), False
+        return (
+            f"{parsed.get('message', '没理解这句话。')}\n"
+            "可以直接说：给我安排秋日通勤穿搭今天晚上 7 点的排期。",
+            False,
+        )
 
     def _run(self, parsed: dict[str, Any]) -> str:
         self.counter += 1
+        self.last_intent = parsed
         request = PublishRequest.from_dict(
             {
                 "request_id": f"CHAT-{self.counter:04d}",
@@ -130,13 +137,20 @@ class ChatSession:
         output, trace = runner.run()
         self.last_output = output
         self.last_trace = trace
+        self.context.last_run = output
+        self.context.refresh(self.store)
         write_json(self.store.state_dir / "output.json", output)
         write_json(self.store.state_dir / "trace.json", trace)
+        write_json(self.store.state_dir / "intent.json", parsed)
         return self._format_run(request, output, trace)
 
     def _format_run(self, request: PublishRequest, output: dict, trace: dict) -> str:
+        intent = self.last_intent or {}
         lines = [
             "",
+            f"[意图] {intent.get('material_id')} {intent.get('date')} "
+            f"{intent.get('time')} constraint={intent.get('constraint')} "
+            f"# {intent.get('reason', '')}",
             f"[运行] request={request.request_id} engine={output['engine']} "
             f"status={output['status']} outcome={output['outcome']}",
             "[工具调用]",
@@ -187,6 +201,7 @@ class ChatSession:
         return "\n".join(lines)
 
     def _format_state(self) -> str:
+        self.context.refresh(self.store)
         drafts = self.store.list_drafts()
         if not drafts:
             return "当前没有草稿。"
@@ -206,6 +221,7 @@ class ChatSession:
         return "\n".join(lines)
 
     def _format_confirmation(self, result: dict[str, Any]) -> str:
+        self.context.refresh(self.store)
         lines = [f"[确认] {result['action']}：{result['message']}"]
         draft = result.get("draft")
         if draft:

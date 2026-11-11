@@ -20,6 +20,7 @@
 | `12-ambiguous-confirm` | M01 + M06 两份 pending，用户回复“继续” | `needs_clarification` | 列出两份草稿，不确认任何一份，store 仍有两份 |
 | `13-chat-sim` | bash 交互，离线：排 M01 18:00 → 可以 → 状态 → 退出 | `confirmed` | 终端 transcript、最后一次 output/trace/store |
 | `14-chat-live` | bash 交互，真实模型：同样的输入 | `confirmed` | `engine=live-opencode-local`，真实 Trace |
+| `15-chat-natural` | 自然语言：秋日通勤穿搭今天晚上 7 点 | `drafted` | 解析为 M00 今天 19:00，真实模型执行工具链 |
 
 复现单条用例：
 
@@ -109,6 +110,14 @@ OPENCODE_CLI_PATH="/path/to/opencode-cli" python3 run.py chat \
 ```
 
 `14-chat-live/` 是同一段输入的真实模型运行记录，`transcript.txt` 里能看到 `engine=live-opencode-local` 和 `opencode-go/deepseek-v4.1-flash` 生成的工具调用。
+
+`15-chat-natural/` 是自然语言输入：
+
+```text
+给我安排一下秋日 通勤穿搭今天晚上 7 点的排期
+```
+
+`intent.json` 是解析结果（M00、今天、19:00、preferred），`transcript.txt` 是真实模型执行 `get_material → check_rules → query_slots → save_draft → finish` 的终端记录，`trace.json` 是工具调用 Trace。
 
 ## 模糊确认
 

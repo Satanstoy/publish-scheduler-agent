@@ -50,6 +50,7 @@ python3 scripts/build_examples.py
 | AI 使用范围、修改和验证 | `docs/04-ai-usage.md` |
 | 最难问题、学习收获、下一步 | `docs/05-retrospective.md` |
 | 代码审查发现和修正 | `docs/06-code-review.md` |
+| 面试追问与回答 | `docs/07-grill-qa.md` |
 | 交付规范逐项对照 | `SUBMISSION.md` |
 
 目录组织参考了 `lwz1357/agent-campus-submission-example` 的交付结构；该示例是另一个题目（短视频脚本生成）的离线 mock，不包含真实模型 ReAct，因此只参考目录与材料组织，没有复制其代码或业务内容。
@@ -72,6 +73,7 @@ python3 scripts/build_examples.py
 | 模糊确认（多份） | `examples/12-ambiguous-confirm` | “继续”只返回 `needs_clarification`，不确认任何一份 |
 | 交互式 bash（离线） | `examples/13-chat-sim` | 输入请求、确认、查看状态、退出 |
 | 交互式 bash（真实模型） | `examples/14-chat-live` | `engine=live-opencode-local`，真实 Trace |
+| 自然语言排期（真实模型） | `examples/15-chat-natural` | “秋日通勤穿搭今天晚上 7 点” → M00 19:00 → 工具链 |
 
 `examples/README.md` 有逐条说明、实际输出和 Trace 对照。
 
@@ -145,22 +147,21 @@ python3 run.py confirm-text \
 OPENCODE_CLI_PATH="/path/to/opencode-cli" python3 run.py chat \
   --data-dir data \
   --state-dir .runs/chat-live \
-  --engine opencode-local \
-  --now 2026-11-10T09:00:00+08:00
+  --engine opencode-local
 ```
 
-进入后直接输入：
+进入后直接说人话：
 
 ```text
-排 M01 2026-11-12 18:00
+给我安排一下秋日 通勤穿搭今天晚上 7 点的排期
 可以
 状态
 退出
 ```
 
-`chat` 使用与 `run` 相同的工具、ledger、报告和确认解析层；每次请求会真实调用模型、执行工具，并把本次 `output.json`、`trace.json` 写到 `--state-dir`。`examples/14-chat-live/transcript.txt` 是一段真实模型运行的终端记录，`examples/14-chat-live/trace.json` 里有每次 `model_decision` 和 `tool_result`。
+`chat` 会先把这句话解析成 `M00 + 今天 19:00 + preferred`，打印 `[意图]`，然后让真实模型走 `get_material → check_rules → query_slots → save_draft → finish`。每次请求会把 `intent.json`、`output.json`、`trace.json` 写到 `--state-dir`。`examples/15-chat-natural/transcript.txt` 和 `trace.json` 是这段输入的真实模型记录。
 
-不带 `--engine` 时，`chat` 会优先选择本机 `opencode-local`，其次选择配置了 `OPENAI_API_KEY` / `OPENAI_MODEL` 的 `live`；两者都没有时会直接报配置错误，不会静默走离线 mock。只验证流程时显式使用 `--engine offline`。
+不带 `--engine` 时，`chat` 会优先选择配置了 `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `OPENAI_MODEL` 的 `live`，其次选择本机 `opencode-local`；两者都没有时会直接报配置错误，不会静默走离线 mock。只验证流程时显式使用 `--engine offline`。
 
 没有本机 OpenCode CLI 时，可以：
 
@@ -283,7 +284,7 @@ python3 -m pytest -v -o addopts="" > examples/test-results.txt
 
 当前没有 OS/容器级 sandbox，Agent 和工具在同一个 Python 进程里运行。应用层边界是：
 
-- 模型只能调用 5 个固定工具，没有 shell、网络、任意文件读写或发布工具。
+- 模型只能调用 6 个固定工具（含 `get_current_time`），没有 shell、网络、任意文件读写或发布工具。
 - 工具只读 `data/`，只写 `--state-dir/drafts.json`；写入用线程锁、文件锁和原子替换。
 - `save_draft` 在工具层校验前置条件、硬约束、时段冲突和幂等，模型不能绕过。
 - 最终报告由 ledger 生成，模型不能用自由文本声称保存成功。

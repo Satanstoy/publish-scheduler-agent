@@ -4,9 +4,11 @@ import io
 import json
 
 from conftest import DATA_DIR, NOW, SUBMITTED_AT, new_store
-from publish_agent.chat import ChatSession, parse_request_line
+from publish_agent.chat import ChatSession
 from publish_agent.cli import main
+from publish_agent.context import ChatContext
 from publish_agent.engines import OfflineEngine
+from publish_agent.intent import parse_request
 
 
 def _session(tmp_path):
@@ -18,17 +20,26 @@ def _session(tmp_path):
     return ChatSession(store, factory, NOW)
 
 
-def test_parse_request_line_variants():
-    assert parse_request_line("排 M01 2026-11-12 18:00") == {
-        "material_id": "M01",
-        "date": "2026-11-12",
-        "time": "18:00",
-        "constraint": "preferred",
-    }
-    assert parse_request_line("M00 10:00")["date"] == "2026-11-12"
-    assert parse_request_line("排 M04 2026-11-14 18:00 hard")["constraint"] == "hard"
-    assert parse_request_line("排 M01 18:00 硬性")["constraint"] == "hard"
-    assert parse_request_line("帮我看看") is None
+def test_request_parser_variants(tmp_path):
+    store = new_store(tmp_path)
+    context = ChatContext(store.materials, NOW)
+    assert parse_request("排 M01 2026-11-12 18:00", context)["material_id"] == "M01"
+    assert parse_request("M00 10:00", context)["date"] == "2026-11-10"
+    assert parse_request("排 M04 2026-11-14 18:00 hard", context)["constraint"] == "hard"
+    assert parse_request("排 M01 18:00 硬性", context)["constraint"] == "hard"
+    assert parse_request("帮我看看", context)["intent"] == "unknown"
+
+
+def test_chat_natural_language_title_and_today(tmp_path):
+    session = _session(tmp_path)
+    reply, should_exit = session.handle("给我安排一下秋日 通勤穿搭今天晚上 7 点的排期")
+    assert should_exit is False
+    assert "[意图] M00 2026-11-10 19:00" in reply
+    assert "M00" in reply
+    assert "19:00" in reply
+    assert "drafted" in reply
+    assert "published=false" in reply
+    assert len(session.store.list_drafts()) == 1
 
 
 def test_chat_soft_conflict_then_confirm(tmp_path):
@@ -71,7 +82,7 @@ def test_chat_hard_conflict_has_no_draft(tmp_path):
 def test_chat_help_state_exit(tmp_path):
     session = _session(tmp_path)
     help_reply, _ = session.handle("帮助")
-    assert "排 M01" in help_reply
+    assert "给我安排" in help_reply
     state_reply, _ = session.handle("状态")
     assert "没有草稿" in state_reply
     exit_reply, should_exit = session.handle("退出")

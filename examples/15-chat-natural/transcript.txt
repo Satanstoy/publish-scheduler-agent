@@ -1,0 +1,30 @@
+素材审核与发布排期 Agent（交互模式）
+素材: M00 秋日通勤穿搭、M01 城市夜跑指南、M02 未命名素材、M03 高收益副业揭秘、M04 双十一预热混剪、M05 直播切片：秋季新品、M06 长视频：年度回顾
+输入 `帮助` 查看命令，`退出` 结束。
+用户> 
+[意图] M00 2026-11-11 19:00 constraint=preferred # 请求解析：素材标题/ID + 相对日期 + 时间
+[运行] request=CHAT-0001 engine=live-opencode-local status=completed outcome=scheduled
+[工具调用]
+  → get_material({"material_id": "M00"})  # 必须从 get_material 开始处理 M00
+    get_material -> OK: 读取 M00，字段完整
+  → check_rules({"material_id": "M00"})  # 按流程在读取素材后必须检查版权、禁词、黑名单日期、时长、工作时段和临期风险
+    check_rules -> OK: 规则检查：无风险
+  → query_slots({"material_id": "M00"})  # 继续按 get_material→check_rules→query_slots 流程处理 M00
+    query_slots -> OK: 请求时段 19:00 可用
+  → save_draft({"material_id": "M00", "date": "2026-11-11", "start": "19:00", "confirmation_status": "confirmed", "decision_basis": "preferred 时段 19:00 可用，规则检查无风险且无时段冲突"})  # 查询确认请求时段可用，进入保存草稿步骤
+    save_draft -> INVALID_ARGUMENTS: confirmation_status 必须是 not_required 或 pending_user_confirmation。
+  → save_draft({"material_id": "M00", "date": "2026-11-11", "start": "19:00", "confirmation_status": "not_required", "decision_basis": "preferred 时段 19:00 可用，规则检查无风险且无时段冲突"})  # save_draft 参数错误需修正后重试
+    save_draft -> OK: 草稿已保存（仅草稿，未发布）。
+  → finish({"summary": "M00 已完成规则检查与时段查询，并成功保存草稿（仅草稿，未发布），确认状态为 not_required。"})  # 请求中唯一素材 M00 已进入 drafted 终态。
+    finish -> OK: M00 已完成规则检查与时段查询，并成功保存草稿（仅草稿，未发布），确认状态为 not_required。
+[结果]
+  M00 status=drafted review=passed schedule=drafted
+    建议 2026-11-11 19:00-20:00
+    草稿 DRF-E491497D06 save=saved confirmation=not_required
+    published=false
+没有待确认草稿。
+输出: .runs/chat-nl-live/output.json  Trace: .runs/chat-nl-live/trace.json
+用户> 共 1 份草稿：
+  DRF-E491497D06  M00  2026-11-11 19:00-20:00  confirmation=not_required  status=draft  published=false
+其中待确认 0 份。
+用户> 会话结束。草稿仍然只保存在本地，未发布。

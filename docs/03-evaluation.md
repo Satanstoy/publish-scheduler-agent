@@ -31,7 +31,7 @@ $ python3 -m pytest -q
 ..................................................................       [100%]
 ```
 
-当前收集到 **89 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
+当前收集到 **90 个测试**，全部通过。完整测试输出保存在 `examples/test-results.txt`，评估文档中的测试引用均指向该文件或对应测试名。
 
 ## 3. 验收场景与结果
 
@@ -50,6 +50,7 @@ $ python3 -m pytest -q
 | 模糊确认（多份） | `test_multiple_pending_never_confirms_all_with_one_word` | “继续”不确认任何一份 | 通过 | `examples/12-ambiguous-confirm/confirm.output.json` |
 | 交互式 bash（离线） | `test_chat_cli_piped_session` | 输入请求、确认、状态、退出 | 通过 | `examples/13-chat-sim/transcript.txt` |
 | 交互式 bash（真实模型） | 实际运行 | `engine=live-opencode-local`，真实工具调用 | 通过 | `examples/14-chat-live/transcript.txt` |
+| 自然语言排期 | `test_chat_natural_language_title_and_today` | 秋日通勤穿搭今天晚上 7 点 → M00 19:00 | 通过 | `examples/15-chat-natural/` |
 | 步数上限 | `test_step_limit_returns_incomplete` | `incomplete`，不伪造成功 | 通过 | `examples/10-step-limit/output.json` |
 | 工具调用上限 | `test_tool_limit_returns_incomplete` | `incomplete` | 通过 | 测试内断言 |
 | 更换占用时段 | `test_conflict_after_19_is_occupied_selects_20` | 19:00 也被占用时改选 20:00 | 通过 | 测试内断言 |
@@ -171,7 +172,9 @@ python3 run.py chat --data-dir data --state-dir .runs/chat-sim \
 退出
 ```
 
-离线终端记录在 `examples/13-chat-sim/transcript.txt`，真实模型终端记录在 `examples/14-chat-live/transcript.txt`；两者的 `output.json`、`trace.json`、`store.json` 也在各自目录。真实模型运行的 `engine=live-opencode-local`，模型是 `opencode-go/deepseek-v4.1-flash`。`chat` 和 `run` 共用同一套工具/ledger/确认解析；确认后仍是 draft，`published=false`。
+离线终端记录在 `examples/13-chat-sim/transcript.txt`，真实模型终端记录在 `examples/14-chat-live/transcript.txt`；两者的 `output.json`、`trace.json`、`store.json` 也在各自目录。真实模型运行的 `engine=live-opencode-local`，模型是 `opencode-go/deepseek-v4.1-flash`。
+
+自然语言输入记录在 `examples/15-chat-natural/`：输入“给我安排一下秋日 通勤穿搭今天晚上 7 点的排期”，`intent.json` 解析为 M00 / 2026-11-11 / 19:00 / preferred，`transcript.txt` 里是真实模型执行工具链的终端输出。`chat` 和 `run` 共用同一套工具/ledger/确认解析；确认后仍是 draft，`published=false`。
 
 ## 4. 真实模型 Trace
 

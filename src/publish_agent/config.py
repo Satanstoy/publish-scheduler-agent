@@ -36,11 +36,11 @@ def parse_now(value: str | None) -> datetime:
 
 
 def default_chat_engine() -> str | None:
-    """Interactive chat prefers a real model; it never silently falls back to mock."""
-    if default_opencode_cli_path():
-        return "opencode-local"
+    """Interactive chat prefers the standard URL/key/model path, then local evidence."""
     if os.getenv("OPENAI_API_KEY") and os.getenv("OPENAI_MODEL"):
         return "live"
+    if default_opencode_cli_path():
+        return "opencode-local"
     return None
 
 

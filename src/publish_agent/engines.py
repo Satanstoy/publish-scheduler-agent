@@ -138,6 +138,7 @@ class OpenAIEngine:
         model: str,
         schemas: list[dict[str, Any]] | None = None,
         client: Any | None = None,
+        default_headers: dict[str, str] | None = None,
     ):
         self.model = model
         self.schemas = schemas or TOOL_SCHEMAS
@@ -154,6 +155,7 @@ class OpenAIEngine:
                 base_url=base_url,
                 timeout=90,
                 max_retries=1,
+                default_headers=default_headers or {},
             )
         self.messages: list[dict[str, Any]] = []
         self._initialized = False

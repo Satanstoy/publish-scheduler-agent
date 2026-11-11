@@ -149,6 +149,20 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
+            "name": "get_current_time",
+            "description": "读取当前时间、日期和时区，用于解析今天/明天/晚上等相对时间。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reason": {"type": "string"},
+                },
+                "additionalProperties": False,
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "finish",
             "description": "所有素材都有终态后结束。未完成时会被拒绝并返回缺失素材。",
             "parameters": {
@@ -185,6 +199,7 @@ class ToolRegistry:
             "check_rules": self._check_rules,
             "query_slots": self._query_slots,
             "save_draft": self._save_draft,
+            "get_current_time": self._get_current_time,
             "finish": self._finish,
         }
 
@@ -499,6 +514,17 @@ class ToolRegistry:
         result = self._ok(summary, data)
         self.ledger.record_save(material_id, args, result.to_dict())
         return result
+
+    def _get_current_time(self, args: dict[str, Any]) -> ToolResult:
+        return self._ok(
+            f"当前时间：{self.now.isoformat(timespec='seconds')}",
+            {
+                "now": self.now.isoformat(timespec="seconds"),
+                "date": self.now.date().isoformat(),
+                "time": self.now.strftime("%H:%M"),
+                "timezone": "Asia/Shanghai",
+            },
+        )
 
     def _finish(self, args: dict[str, Any]) -> ToolResult:
         missing = self.ledger.missing_terminal(self.request)
